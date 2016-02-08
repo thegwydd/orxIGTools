@@ -6,10 +6,40 @@ Copyright : Denis Brachet 2016
 
 +++ TODO +++
 
+- Implement an Ini parser/saver class with support for comments and that will mantain comments and blank spaces when saving
+
+
 - Implement a GWEN widget for file and directory browsing
+
 - Implement a GWEN widget for browsing the entire collection of objects (from ini files) 
+  - it's a tree view that shows all folders and ini files.
+  - each Record can be an include, comment or section
+  - for section and keys it must keep track of inheritance (section inheritance and/or value inheritance)
+  - you can expand ini file to see and select the entity to edit or to copy from (to create a new one as new copy or derivative)
+  - you can expand a section to see values and add new keys or edit existing keys
+  - you can select the ini file to add a new section
+  - you can open a section for edit with voice "edit as xxx" where xxx is the kind of editor to open
+  - as soon you selected the editor a check about requested values is performed to determine if it's a valid xxx type
 
 
+- once an editor is choosen, the state of the tree is saved and the entire screen shows the new editor screen
+- all modification are made in memory until you press save
+- backup files are created just before a modification
+
+Main View:
+- it has 4 sections: titlebar, header, contents and footer
+- the titlebar shows "orxIGTools - v1.0.0.0 by Denis Brachet (aka Ainvar)"
+- the header shows the current editor path (main->graphics editor (my_graphics_name)), a back button to go previous level and an exit button
+- the contents shows the current editor page
+- the footer shows a status bar with useful infos and errors
+
+- all editors will have at least 2 main zones:
+	. on the left the panel with all values and commands
+	. on the right the preview viewport with controls to zoom, pan, grid, etc.
+
+- all editors should give both mouse and keyboard editing features
+- the panel must update when using the mouse
+- the viewport must give instant feedback on value changes
 
 
 

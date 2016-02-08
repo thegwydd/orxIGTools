@@ -161,6 +161,8 @@ void orxIGToolsTestApplication::InitializeScene()
 	orxConfig_Load("orxIGToolsTestDefault.ini");
 	orxConfig_Load("Level1.ini");
 
+	PrintSections();
+
 	orxObject_CreateFromConfig("Scene");
 
 	// create objects from level1
@@ -197,3 +199,29 @@ Gwen::Point orxIGToolsTestApplication::GetScreenSize()
 	return Gwen::Point(width, height);
 	}
 
+//////////////////////////////////////////////////////////////////////////
+void orxIGToolsTestApplication::PrintSections()
+	{
+	orxU32 u32SectionCount = orxConfig_GetSectionCounter();
+	for (orxU32 u32SectionIndex = 0; u32SectionIndex < u32SectionCount; u32SectionIndex++)
+		{
+		const orxCHAR * strCurrentSection = orxConfig_GetSection(u32SectionIndex);
+		const orxCHAR * strCurrentSectionOrigin = orxConfig_GetOrigin(strCurrentSection);
+
+		orxConfig_PushSection(strCurrentSection);
+
+		orxU32 u32KeyCount = orxConfig_GetKeyCounter();
+		for (orxU32 u32KeyIndex = 0; u32KeyIndex < u32KeyCount; u32KeyIndex++)
+			{
+			const orxCHAR * strCurrentKey = orxConfig_GetKey(u32KeyIndex);
+			if (orxConfig_IsInheritedValue(strCurrentKey) == orxTRUE)
+				{
+				const orxCHAR * strCurrentKeyParent = orxConfig_GetValueSource(strCurrentKey);
+				}
+			}
+
+		orxConfig_PopSection();
+
+		}
+
+	}

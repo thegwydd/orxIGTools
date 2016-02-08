@@ -51,6 +51,8 @@ class orxIGToolsTestApplication : public Scroll<orxIGToolsTestApplication>
 		orxSTATUS			HandleOrxEvent(const orxEVENT *_pstEvent);
 		//! Helper function that resturns the screen size
 		Gwen::Point			GetScreenSize();
+		//! Prints contents of all sections
+		void				PrintSections();
 
 	private: // Statics
 		static orxSTATUS orxFASTCALL StaticEventHandler(const orxEVENT *_pstEvent);

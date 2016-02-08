@@ -11,9 +11,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "orxGwen", "..\..\..\..\GWEN
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GWEN-Static", "..\..\..\..\GWEN\gwen\Projects\windows\vs2010\GWEN-Static.vcxproj", "{CD5450D5-CFFD-2C4B-84EB-99DA55882121}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "orx", "..\..\..\..\official_orx\code\build\windows\vs2013\orx.vcxproj", "{D2BA47A0-3C12-2F47-964C-73BB2737333B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "orx", "..\..\..\..\orx\code\build\windows\vs2013\orx.vcxproj", "{D2BA47A0-3C12-2F47-964C-73BB2737333B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "orxLIB", "..\..\..\..\official_orx\code\build\windows\vs2013\orxLIB.vcxproj", "{77519887-0047-2040-B809-D5919D87C808}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "orxLIB", "..\..\..\..\orx\code\build\windows\vs2013\orxLIB.vcxproj", "{77519887-0047-2040-B809-D5919D87C808}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{CF00D8FF-60C3-4CAC-A5D8-E117BB98DD72}"
 EndProject
