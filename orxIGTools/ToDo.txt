@@ -15,6 +15,10 @@ Copyright : Denis Brachet 2016
 
 
 +++ Features +++
+
+- UI editor (GWEN):
+	Create and Modify UI scenes
+
 - Image and Sound importer: 
 	Imports files from your hd into game folders
 
@@ -63,7 +67,10 @@ You could use AngelScript JIT compiler too to have a near-native performance of 
 --------------------------------------------------------------------------------------------
 
 
-
+Needed Environment Variables:
+ORX_PATH		- path to orx folder
+GEWN_PATH		- path to GWEN folder
+ORX_GWEN_PATH	- path to orxGwen folder
 
 
 

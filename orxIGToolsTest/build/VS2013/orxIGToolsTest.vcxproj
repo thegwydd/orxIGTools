@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{55CAC2A0-908C-4A8C-A127-E4CB55D10B92}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>orxIGToolsTest</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(GWEN_PATH)\include;$(ORX_GWEN_PATH)\include;$(ORX_PATH)\code\include;$(SCROLL_PATH)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(GWEN_PATH)\lib;$(GWEN_PATH)\lib\windows\;$(ORX_GWEN_PATH)\lib\$(Platform)\$(Configuration);$(ORX_PATH)\code\lib\dynamic;$(GWEN_PATH)\lib\windows\vs2010\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(GWEN_PATH)\include;$(ORX_GWEN_PATH)\include;$(ORX_PATH)\code\include;$(SCROLL_PATH)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(GWEN_PATH)\lib;$(GWEN_PATH)\lib\windows\;$(ORX_GWEN_PATH)\lib\$(Platform)\$(Configuration);$(ORX_PATH)\code\lib\dynamic;$(GWEN_PATH)\lib\windows\vs2010\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;__orxDEBUG__ ;__orxMSVC__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>orxd.lib;orxGwen.lib;gwen_staticd.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy $(ORX_PATH)\code\lib\dynamic\*.dll $(TargetDir)
+copy $(ProjectDir)\..\..\data\*.* $(TargetDir)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;__orxMSVC__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>orx.lib;orxGwen.lib;gwen_static.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy $(ORX_PATH)\code\lib\dynamic\*.dll $(TargetDir)
+copy $(ProjectDir)\..\..\data\*.* $(TargetDir)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\EnemyBug.cpp" />
+    <ClCompile Include="..\..\src\Hero.cpp" />
+    <ClCompile Include="..\..\src\orxIGToolsTestApplication.cpp" />
+    <ClCompile Include="..\..\src\Soldier.cpp" />
+    <ClCompile Include="..\..\src\Walls.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\EnemyBug.h" />
+    <ClInclude Include="..\..\src\Hero.h" />
+    <ClInclude Include="..\..\src\orxIGToolsTestApplication.h" />
+    <ClInclude Include="..\..\src\Singleton.h" />
+    <ClInclude Include="..\..\src\Soldier.h" />
+    <ClInclude Include="..\..\src\Walls.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\data\Bugs.ini" />
+    <None Include="..\..\data\Hero.ini" />
+    <None Include="..\..\data\Level1.ini" />
+    <None Include="..\..\data\orxIGToolsDefault.ini" />
+    <None Include="..\..\data\orxIGToolsTest.ini" />
+    <None Include="..\..\data\Soldier.ini" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
