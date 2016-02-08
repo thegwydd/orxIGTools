@@ -1,0 +1,8 @@
+syntax: glob
+orxIGTools/build/VS2013/Debug/*.*
+orxIGTools/build/VS2013/Release/*.*
+*.tlog
+*.pdb
+*.obj
+*.sdf
+*.idb
