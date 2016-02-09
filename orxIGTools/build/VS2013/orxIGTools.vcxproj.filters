@@ -4,4 +4,25 @@
     <Text Include="..\..\Readme.txt" />
     <Text Include="..\..\ToDo.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\StringUtility.cpp" />
+    <ClCompile Include="..\..\src\OrxIniFile.cpp" />
+    <ClCompile Include="..\..\src\Editor.cpp" />
+    <ClCompile Include="..\..\src\HeaderControl.cpp" />
+    <ClCompile Include="..\..\src\MainPage.cpp" />
+    <ClCompile Include="..\..\src\FooterControl.cpp" />
+    <ClCompile Include="..\..\src\ContentsControl.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\StringUtility.h" />
+    <ClInclude Include="..\..\src\Types.h" />
+    <ClInclude Include="..\..\src\OrxIniFile.h" />
+    <ClInclude Include="..\..\include\orxIGTools.h" />
+    <ClInclude Include="..\..\src\Editor.h" />
+    <ClInclude Include="..\..\src\Singleton.h" />
+    <ClInclude Include="..\..\src\HeaderControl.h" />
+    <ClInclude Include="..\..\src\MainPage.h" />
+    <ClInclude Include="..\..\src\FooterControl.h" />
+    <ClInclude Include="..\..\src\ContentsControl.h" />
+  </ItemGroup>
 </Project>

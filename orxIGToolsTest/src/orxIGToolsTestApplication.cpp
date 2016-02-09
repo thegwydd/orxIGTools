@@ -15,6 +15,9 @@
 #include "Soldier.h"
 #include "Walls.h"
 
+#include <orxIGTools.h>
+
+
 #ifndef __orxMSVC__
 //////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
@@ -38,135 +41,75 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 //////////////////////////////////////////////////////////////////////////
-orxSTATUS orxFASTCALL orxIGToolsTestApplication::StaticEventHandler(const orxEVENT *_pstEvent)
-	{
-	return orxIGToolsTestApplication::GetInstance().HandleOrxEvent(_pstEvent);
-	}
-
-//////////////////////////////////////////////////////////////////////////
-orxSTATUS orxIGToolsTestApplication::Init ()
+orxSTATUS orxIGToolsTestApplication::Init()
 	{
 	orxSTATUS result = orxSTATUS_SUCCESS;
 
-	InitializeGui();
-	InitializeInputSystem();
+	m_CurrentScene = nullptr;
+	m_Soldier = nullptr;
+
+	/* Initialize the editor */
+	orxIGTools::Editor::Instance().Init();
+
+	RunEditor();
+
+/*
+	/ * Initialize events for game* /
 	InitializeEvents();
+	
+	/ * Initialize the scene * /
 	InitializeScene();
+*/
 
 	return result;
 	}
 
 //////////////////////////////////////////////////////////////////////////
-orxSTATUS orxIGToolsTestApplication::Run ()
+orxSTATUS orxIGToolsTestApplication::Run()
 	{
 	orxSTATUS result = orxSTATUS_SUCCESS;
-	
-	/* Update the input module */
-	m_GwenInput.Update();
+
+	if (!orxIGTools::Editor::Instance().IsVisible() && orxInput_IsActive("ToggleEditor"))
+		RunEditor();
+
+	/* Update the editor */
+	orxIGTools::Editor::Instance().Run();
 
 	return result;
 	}
 
 //////////////////////////////////////////////////////////////////////////
-void orxIGToolsTestApplication::Exit ()
+void orxIGToolsTestApplication::Exit()
 	{
-	/* We're a bit lazy here so we let orx clean all our mess! :) */
-	delete m_pCanvas;
-	delete m_pSkin;
-	delete m_pRenderer;
+	/* Perform Editor cleanup*/
+	orxIGTools::Editor::Instance().Exit();
 	}
 
 //////////////////////////////////////////////////////////////////////////
 orxSTATUS orxIGToolsTestApplication::HandleOrxEvent(const orxEVENT *_pstEvent)
 	{
-	if ((_pstEvent->eType == orxEVENT_TYPE_RENDER) && (_pstEvent->eID == orxRENDER_EVENT_STOP))
-		m_pCanvas->RenderCanvas();
-
-	if (_pstEvent->eType == orxEVENT_TYPE_DISPLAY)
-			UpdateCanvasSize();
-
-/*
-	else
-		m_GwenInput.ProcessMessage(_pstEvent);
-*/
-	
 	return orxSTATUS_SUCCESS;
-	}
-
-//////////////////////////////////////////////////////////////////////////
-void orxIGToolsTestApplication::InitializeGui()
-	{
-	// Create a GWEN ORX Renderer
-	m_pRenderer = new orxGwen::Renderer();
-	m_pRenderer->Init();
-
-	// Create a GWEN skin
-	m_pSkin = new Gwen::Skin::TexturedBase(m_pRenderer);
-	//m_pSkin->Init("DefaultSkin.png");
-	m_pSkin->Init("Dark-Orange Theme.png");
-
-	// Create a Canvas (it's root, on which all other GWEN panels are created)
-	m_pCanvas = new Gwen::Controls::Canvas(m_pSkin);
-	m_pCanvas->SetSize(GetScreenSize());
-	m_pCanvas->SetDrawBackground(false);
-	m_pCanvas->SetBackgroundColor(Gwen::Color(150, 170, 170, 255));
-
-	// create the dock base as a child of the canvas
-	m_DockBase = new Gwen::Controls::DockBase(m_pCanvas);
-	m_DockBase->Dock(Pos::Fill);
-	m_DockBase->SetSize(m_pCanvas->GetSize());
-
-	m_CollapsibleList = new Controls::CollapsibleList(m_DockBase);
-	m_DockBase->GetLeft()->GetTabControl()->AddPage("CollapsibleList", m_CollapsibleList);
-	m_DockBase->GetLeft()->SetWidth(150);
-
-	m_TextOutput = new Controls::ListBox(m_DockBase->GetBottom());
-
-	m_StatusBar = new Controls::StatusBar(m_DockBase);
-	m_StatusBar->Dock(Pos::Bottom);
-	Controls::Layout::Center* pCenter = new Controls::Layout::Center(m_DockBase);
-	pCenter->Dock(Pos::Fill);
-
-	// Create a viewport control
-	m_ViewportControl = new orxGwen::Controls::ViewportControl(pCenter);
-	m_ViewportControl->Dock(Pos::Fill);
-	m_ViewportControl->SetSize(1024, 768);
-
-	UpdateCanvasSize();
-	}
-
-//////////////////////////////////////////////////////////////////////////
-void orxIGToolsTestApplication::InitializeInputSystem()
-	{
-	// Initialize Control helper
-	m_GwenInput.Initialize(m_pCanvas);
 	}
 
 //////////////////////////////////////////////////////////////////////////
 void orxIGToolsTestApplication::InitializeEvents()
 	{
-	//.. renderer
-	orxEvent_AddHandler(orxEVENT_TYPE_RENDER, StaticEventHandler);
-	// add event for resizing
-	orxEvent_AddHandler(orxEVENT_TYPE_DISPLAY, StaticEventHandler);
 	}
 
 //////////////////////////////////////////////////////////////////////////
 void orxIGToolsTestApplication::InitializeScene()
 	{
-	// assign the viewport
-	m_ViewportControl->SetViewport(this->GetMainViewport());
-	
 	// create the scene
 	orxConfig_Load("orxIGToolsTestDefault.ini");
 	orxConfig_Load("Level1.ini");
 
-	PrintSections();
+	//PrintSections();
 
-	orxObject_CreateFromConfig("Scene");
+	m_CurrentScene = CreateObject("Walls");
 
 	// create objects from level1
-	CreateObject("Soldier");
+	m_Soldier = CreateObject("Soldier");
+/*
 	CreateObject("Walls");
 	// an enemies of course...
 	for (orxU32 i = 0; i < 5; i++)
@@ -174,6 +117,7 @@ void orxIGToolsTestApplication::InitializeScene()
 		ScrollObject * pObj = CreateObject("O-EnemyBug");
 		const orxCHAR * pszName = orxObject_GetName(pObj->GetOrxObject());
 		}
+*/
 	}
 
 //////////////////////////////////////////////////////////////////////////
@@ -183,23 +127,6 @@ void orxIGToolsTestApplication::BindObjects()
 	ScrollBindObject<Hero>("O-Hero");
 	ScrollBindObject<Soldier>("Soldier");
 	ScrollBindObject<Walls>("Walls");
-	}
-
-//////////////////////////////////////////////////////////////////////////
-void orxIGToolsTestApplication::UpdateCanvasSize()
-	{
-	orxFLOAT width, height;
-	orxDisplay_GetScreenSize(&width, &height);
-	Gwen::Rect canvas_bounds(0, 0, width, height);
-	m_pCanvas->SetBounds(canvas_bounds);
-	}
-
-//////////////////////////////////////////////////////////////////////////
-Gwen::Point orxIGToolsTestApplication::GetScreenSize()
-	{
-	orxFLOAT width, height;
-	orxDisplay_GetScreenSize(&width, &height);
-	return Gwen::Point(width, height);
 	}
 
 //////////////////////////////////////////////////////////////////////////
@@ -226,5 +153,24 @@ void orxIGToolsTestApplication::PrintSections()
 		orxConfig_PopSection();
 
 		}
+	}
+
+//////////////////////////////////////////////////////////////////////////
+void orxIGToolsTestApplication::RunEditor()
+	{
+	// delete the entire scene
+	if (m_CurrentScene != nullptr)
+		{
+		this->DeleteObject(m_CurrentScene);
+		m_CurrentScene = nullptr;
+		}
+	
+	if (m_Soldier!= nullptr)
+		{
+		this->DeleteObject(m_Soldier);
+		m_Soldier = nullptr;
+		}
+
+	orxIGTools::Editor::Instance().Show(true);
 
 	}

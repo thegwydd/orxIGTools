@@ -41,13 +41,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(GWEN_PATH)\include;$(ORX_GWEN_PATH)\include;$(ORX_PATH)\code\include;$(SCROLL_PATH)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(GWEN_PATH)\lib;$(GWEN_PATH)\lib\windows\;$(ORX_GWEN_PATH)\lib\$(Platform)\$(Configuration);$(ORX_PATH)\code\lib\dynamic;$(GWEN_PATH)\lib\windows\vs2010\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(GWEN_PATH)\include;$(ORX_GWEN_PATH)\include;$(ORX_PATH)\code\include;$(SCROLL_PATH)\include;$(ProjectDir)..\..\..\orxIGTools\include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(GWEN_PATH)\lib;$(GWEN_PATH)\lib\windows\;$(ORX_GWEN_PATH)\lib\$(Platform)\$(Configuration);$(ORX_PATH)\code\lib\dynamic;$(GWEN_PATH)\lib\windows\vs2010\;$(ProjectDir)..\..\..\orxIGTools\lib\$(Platform)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <OutDir>$(ProjectDir)..\..\bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(GWEN_PATH)\include;$(ORX_GWEN_PATH)\include;$(ORX_PATH)\code\include;$(SCROLL_PATH)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(GWEN_PATH)\lib;$(GWEN_PATH)\lib\windows\;$(ORX_GWEN_PATH)\lib\$(Platform)\$(Configuration);$(ORX_PATH)\code\lib\dynamic;$(GWEN_PATH)\lib\windows\vs2010\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(GWEN_PATH)\include;$(ORX_GWEN_PATH)\include;$(ORX_PATH)\code\include;$(SCROLL_PATH)\include;$(ProjectDir)..\..\..\orxIGTools\include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(GWEN_PATH)\lib;$(GWEN_PATH)\lib\windows\;$(ORX_GWEN_PATH)\lib\$(Platform)\$(Configuration);$(ORX_PATH)\code\lib\dynamic;$(GWEN_PATH)\lib\windows\vs2010\;$(ProjectDir)..\..\..\orxIGTools\lib\$(Platform)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <OutDir>$(ProjectDir)..\..\bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -61,7 +63,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>orxd.lib;orxGwen.lib;gwen_staticd.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>orxd.lib;gwen_staticd.lib;orxIGTools.lib;orxGwen.lib;opengl32.lib;%(AdditionalDependencies);</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(ORX_PATH)\code\lib\dynamic\*.dll $(TargetDir)
@@ -84,7 +86,7 @@ copy $(ProjectDir)\..\..\data\*.* $(TargetDir)</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>orx.lib;orxGwen.lib;gwen_static.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>orx.lib;gwen_static.lib;orxIGTools.lib;orxGwen.lib;opengl32.lib;%(AdditionalDependencies);</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(ORX_PATH)\code\lib\dynamic\*.dll $(TargetDir)
@@ -102,7 +104,6 @@ copy $(ProjectDir)\..\..\data\*.* $(TargetDir)</Command>
     <ClInclude Include="..\..\src\EnemyBug.h" />
     <ClInclude Include="..\..\src\Hero.h" />
     <ClInclude Include="..\..\src\orxIGToolsTestApplication.h" />
-    <ClInclude Include="..\..\src\Singleton.h" />
     <ClInclude Include="..\..\src\Soldier.h" />
     <ClInclude Include="..\..\src\Walls.h" />
   </ItemGroup>
