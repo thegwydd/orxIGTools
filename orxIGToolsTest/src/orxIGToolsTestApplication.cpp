@@ -170,7 +170,10 @@ void orxIGToolsTestApplication::InitializeScene()
 	CreateObject("Walls");
 	// an enemies of course...
 	for (orxU32 i = 0; i < 5; i++)
-		CreateObject("O-EnemyBug");
+		{
+		ScrollObject * pObj = CreateObject("O-EnemyBug");
+		const orxCHAR * pszName = orxObject_GetName(pObj->GetOrxObject());
+		}
 	}
 
 //////////////////////////////////////////////////////////////////////////
