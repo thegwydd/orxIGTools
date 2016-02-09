@@ -51,15 +51,13 @@ orxSTATUS orxIGToolsTestApplication::Init()
 	/* Initialize the editor */
 	orxIGTools::Editor::Instance().Init();
 
-	RunEditor();
+//	RunEditor();
 
-/*
-	/ * Initialize events for game* /
+	// Initialize events for game
 	InitializeEvents();
 	
-	/ * Initialize the scene * /
+	// Initialize the scene
 	InitializeScene();
-*/
 
 	return result;
 	}
@@ -170,6 +168,8 @@ void orxIGToolsTestApplication::RunEditor()
 		this->DeleteObject(m_Soldier);
 		m_Soldier = nullptr;
 		}
+	
+	orxViewport_Enable(this->GetMainViewport(), orxFALSE);
 
 	orxIGTools::Editor::Instance().Show(true);
 

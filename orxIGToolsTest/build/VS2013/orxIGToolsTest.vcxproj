@@ -67,7 +67,8 @@
     </Link>
     <PostBuildEvent>
       <Command>copy $(ORX_PATH)\code\lib\dynamic\*.dll $(TargetDir)
-copy $(ProjectDir)\..\..\data\*.* $(TargetDir)</Command>
+copy $(ProjectDir)\..\..\data\*.* $(TargetDir)
+copy $(ProjectDir)\..\..\..\orxIGTools\data\*.* $(TargetDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -90,7 +91,8 @@ copy $(ProjectDir)\..\..\data\*.* $(TargetDir)</Command>
     </Link>
     <PostBuildEvent>
       <Command>copy $(ORX_PATH)\code\lib\dynamic\*.dll $(TargetDir)
-copy $(ProjectDir)\..\..\data\*.* $(TargetDir)</Command>
+copy $(ProjectDir)\..\..\data\*.* $(TargetDir)
+copy $(ProjectDir)\..\..\..\orxIGTools\data\*.* $(TargetDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

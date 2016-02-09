@@ -1,4 +1,7 @@
 #include "Editor.h"
+#include <algorithm>
+
+#include "IniTool.h"
 
 namespace orxIGTools
 	{
@@ -15,6 +18,7 @@ namespace orxIGTools
 		m_Visible(false),
 		m_pCanvas(nullptr)
 		{
+		AddTool(std::make_shared<IniTool>());
 		}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -74,29 +78,12 @@ namespace orxIGTools
 		m_pCanvas->SetSize(GetScreenSize());
 		m_pCanvas->SetDrawBackground(false);
 		m_pCanvas->SetBackgroundColor(Gwen::Color(150, 170, 170, 255));
+		m_pCanvas->SetPadding(Padding(1, 0, 1, 1));
 
 		InitializeInputSystem();
 
-/*
-		// create the dock base as a child of the canvas
-		m_DockBase = new Gwen::Controls::DockBase(m_pCanvas);
-		m_DockBase->Dock(Pos::Fill);
-		m_DockBase->SetSize(m_pCanvas->GetSize());
-*/
-
-		// Add controls
-		/*
-		. folder
-		.folder
-		.ini file
-		.include
-		.section
-		.key
-
-		*/
-
+		// create the main page
 		m_MainPage = new orxIGTools::Controls::MainPage(m_pCanvas);
-		m_MainPage->Dock(Pos::Center);
 		m_MainPage->SetSize(m_pCanvas->GetSize());
 
 /*
@@ -162,7 +149,10 @@ namespace orxIGTools
 		if (m_pCanvas)
 			{
 			if ((_pstEvent->eType == orxEVENT_TYPE_RENDER) && (_pstEvent->eID == orxRENDER_EVENT_STOP))
+				{
+				m_pCanvas->DoThink();
 				m_pCanvas->RenderCanvas();
+				}
 
 			if (_pstEvent->eType == orxEVENT_TYPE_DISPLAY)
 				UpdateCanvasSize();
@@ -212,6 +202,41 @@ namespace orxIGTools
 
 		m_Visible = show;
 		}
+
+	//////////////////////////////////////////////////////////////////////////
+	bool Editor::AddTool(Tool::Ptr tool)
+		{
+		bool ret(std::find_if(m_Tools.begin(), m_Tools.end(), [=](Tool::Ptr t) { return (t->GetName() == tool->GetName()); }) == m_Tools.end());
+		if (ret)
+			m_Tools.push_back(tool);
+		return ret;
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	Tool::Ptr Editor::GetToolByTarget(std::string target)
+		{
+		Tool::Ptr ret;
+
+		Tools::iterator it = std::find_if(m_Tools.begin(), m_Tools.end(), [&](Tool::Ptr t) { return (t->GetTarget() == target); });
+		if (it != m_Tools.end())
+			ret = *it;
+
+		return ret;
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	void Editor::OnPageBack()
+		{
+
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	void Editor::OnExit()
+		{
+		m_pCanvas->RemoveAllChildren();
+		Show(false);
+		}
+
 
 
 	}

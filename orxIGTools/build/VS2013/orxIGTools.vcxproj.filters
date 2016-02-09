@@ -1,28 +1,86 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Text Include="..\..\Readme.txt" />
-    <Text Include="..\..\ToDo.txt" />
+    <Text Include="..\..\ToDo.txt">
+      <Filter>Docs</Filter>
+    </Text>
+    <Text Include="..\..\Readme.txt">
+      <Filter>Docs</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\StringUtility.cpp" />
-    <ClCompile Include="..\..\src\OrxIniFile.cpp" />
     <ClCompile Include="..\..\src\Editor.cpp" />
-    <ClCompile Include="..\..\src\HeaderControl.cpp" />
-    <ClCompile Include="..\..\src\MainPage.cpp" />
-    <ClCompile Include="..\..\src\FooterControl.cpp" />
-    <ClCompile Include="..\..\src\ContentsControl.cpp" />
+    <ClCompile Include="..\..\src\ContentsControl.cpp">
+      <Filter>MainPage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\FooterControl.cpp">
+      <Filter>MainPage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\HeaderControl.cpp">
+      <Filter>MainPage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\MainPage.cpp">
+      <Filter>MainPage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\StringUtility.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\OrxIniFile.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\IniTool.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\EditorPage.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\StringUtility.h" />
-    <ClInclude Include="..\..\src\Types.h" />
-    <ClInclude Include="..\..\src\OrxIniFile.h" />
     <ClInclude Include="..\..\include\orxIGTools.h" />
     <ClInclude Include="..\..\src\Editor.h" />
-    <ClInclude Include="..\..\src\Singleton.h" />
-    <ClInclude Include="..\..\src\HeaderControl.h" />
-    <ClInclude Include="..\..\src\MainPage.h" />
-    <ClInclude Include="..\..\src\FooterControl.h" />
-    <ClInclude Include="..\..\src\ContentsControl.h" />
+    <ClInclude Include="..\..\src\Version.h" />
+    <ClInclude Include="..\..\src\ContentsControl.h">
+      <Filter>MainPage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\FooterControl.h">
+      <Filter>MainPage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\HeaderControl.h">
+      <Filter>MainPage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MainPage.h">
+      <Filter>MainPage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\StringUtility.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OrxIniFile.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Singleton.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Tool.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Types.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\IniTool.h">
+      <Filter>Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\EditorPage.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="MainPage">
+      <UniqueIdentifier>{e661945d-7c74-4977-b071-ba1bf5f791fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{226b1f51-7bd6-4f5c-ae84-937c9d970946}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Docs">
+      <UniqueIdentifier>{8abba2c2-7bc7-4852-8e96-0f6ce39b7e5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tools">
+      <UniqueIdentifier>{426d8aa9-8a8d-4bd3-9f19-29d40c2204b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

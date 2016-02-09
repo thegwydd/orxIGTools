@@ -1,0 +1,20 @@
+#ifndef __ORSIGTOOLS_VERSION_INCLUDE_H_
+#define __ORSIGTOOLS_VERSION_INCLUDE_H_
+
+#define VERSION_MAJOR		0
+#define VERSION_MINOR		0
+#define VERSION_REVISION	1
+
+
+#endif // __ORSIGTOOLS_VERSION_INCLUDE_H_
+
+
+
+
+
+
+
+
+
+
+

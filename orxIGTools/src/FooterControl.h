@@ -1,10 +1,9 @@
 #pragma once
 
 #include <orx.h>
-#include <Gwen/Gwen.h>
-#include <Gwen/Controls/Base.h>
+#include "EditorPage.h"
 
-#include <Gwen/Controls/Label.h>
+#include <Gwen/Controls/Button.h>
 
 #include <string>
 
@@ -15,20 +14,21 @@ namespace orxIGTools
 
 		//////////////////////////////////////////////////////////////////////////
 		//! Header of the editor
-		class GWEN_EXPORT FooterControl : public Gwen::Controls::Base
+		class FooterControl : public EditorPage
 			{
 			public:
-				GWEN_CONTROL(FooterControl, Gwen::Controls::Base);
+				GWEN_CONTROL(FooterControl, EditorPage);
 
-				typedef Gwen::Controls::Base BaseClass;
-
-				//! Sets the title of the header
-				void SetTitle(std::string title);
-				//! Gets the title of the header
-				std::string GetTitle();
+				typedef EditorPage BaseClass;
 
 			protected:
-				Gwen::Controls::Label *		m_pTitleLabel;
+				void OnBackPressed(Gwen::Event::Info info);
+				void OnExitPressed(Gwen::Event::Info info);
+
+			protected:
+				Gwen::Controls::Button *	m_pBackButton;
+				Gwen::Controls::Button *	m_pExitButton;
+
 				friend class Gwen::Controls::Base;
 
 			};

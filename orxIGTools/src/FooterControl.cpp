@@ -1,4 +1,5 @@
 #include "FooterControl.h"
+#include "Editor.h"
 
 #include <Gwen/Skin.h>
 #include <Gwen/Controls/Menu.h>
@@ -13,6 +14,7 @@ namespace orxIGTools
 	{
 	namespace Controls
 		{
+		//////////////////////////////////////////////////////////////////////////
 		GWEN_CONTROL_CONSTRUCTOR(FooterControl)
 			{
 			SetSize(100, 20);
@@ -20,26 +22,29 @@ namespace orxIGTools
 			SetKeyboardInputEnabled(false);
 			SetTabable(true);
 
-			m_pTitleLabel = new Gwen::Controls::Label(this);
-			m_pTitleLabel->Dock(Pos::Left);
+			m_pBackButton = new Gwen::Controls::Button(this);
+			m_pBackButton->SetText("Back");
+			m_pBackButton->SetImage("orxIGToolsBack.png");
+			m_pBackButton->Dock(Pos::Left);
+			m_pBackButton->onPress.Add(this, &ThisClass::OnBackPressed);
+
+			m_pExitButton = new Gwen::Controls::Button(this);
+			m_pExitButton->SetText("Exit");
+			m_pExitButton->SetImage("orxIGToolsExit.png");
+			m_pExitButton->Dock(Pos::Right);
+			m_pExitButton->onPress.Add(this, &ThisClass::OnExitPressed);
 			}
 
 		//////////////////////////////////////////////////////////////////////////
-		void FooterControl::SetTitle(std::string title)
+		void FooterControl::OnBackPressed(Gwen::Event::Info info)
 			{
-			if (m_pTitleLabel)
-				m_pTitleLabel->SetText(title);
+			Editor::Instance().OnPageBack();
 			}
 
 		//////////////////////////////////////////////////////////////////////////
-		std::string FooterControl::GetTitle()
+		void FooterControl::OnExitPressed(Gwen::Event::Info info)
 			{
-			std::string ret;
-
-			if (m_pTitleLabel)
-				ret = m_pTitleLabel->GetText().c_str();
-
-			return ret;
+			Editor::Instance().OnExit();
 			}
 
 

@@ -3,26 +3,20 @@
 
 #include "Singleton.h"
 #include "OrxIniFile.h"
+#include "Tool.h"
 #include "MainPage.h"
 
 #include <memory>
 
 #include <Gwen/Gwen.h>
+#include <orxGwen.h>
+
 #include <Gwen/Skins/Simple.h>
 #include <Gwen/Skins/TexturedBase.h>
 
 #include <Gwen/Controls/Layout/Position.h>
-
 #include <Gwen/Controls/DockBase.h>
-#include <Gwen/Controls/CollapsibleList.h>
-#include <Gwen/Controls/TabControl.h>
-#include <Gwen/Controls/ListBox.h>
 #include <Gwen/Controls/StatusBar.h>
-
-#include <orxGwen.h>
-#include <Controls/ViewportControl.h>
-
-
 
 namespace orxIGTools
 	{
@@ -49,6 +43,17 @@ namespace orxIGTools
 			void				Show(bool show);
 			//! Tells if the editor is visible
 			bool				IsVisible() { return m_Visible; };
+			//! Adds a tool
+			bool				AddTool(Tool::Ptr tool);
+			//! Get tool list
+			const Tools			GetTools() { return m_Tools; };
+			//! Adds a tool
+			Tool::Ptr			GetToolByTarget(std::string target);
+
+			//! Handles back button pressure event
+			void				OnPageBack();
+			//! Handles an Exit event
+			void				OnExit();
 
 		private:
 			//!	Initializes Gwen stuff
@@ -78,6 +83,8 @@ namespace orxIGTools
 			bool								m_Visible;
 			//! Loaded orx Ini files
 			OrxIniFiles							m_Files;
+			//! Registered tools
+			Tools								m_Tools;
 			//! Skin to use with the renderer
 			Gwen::Skin::TexturedBase*			m_pSkin = nullptr;
 			//! Renderer for GWEN
@@ -86,10 +93,9 @@ namespace orxIGTools
 			orxGwen::Input						m_GwenInput;
 			//! Base Canvas (root) 
 			Gwen::Controls::Canvas*				m_pCanvas;
-			//! Dock base, child of root and parent of others contols
-			Gwen::Controls::DockBase *			m_DockBase;
 			//! Main page control
 			orxIGTools::Controls::MainPage *	m_MainPage;
+
 
 
 		};

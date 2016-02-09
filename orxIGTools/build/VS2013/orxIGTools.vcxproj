@@ -17,8 +17,10 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\ContentsControl.cpp" />
     <ClCompile Include="..\..\src\Editor.cpp" />
+    <ClCompile Include="..\..\src\EditorPage.cpp" />
     <ClCompile Include="..\..\src\FooterControl.cpp" />
     <ClCompile Include="..\..\src\HeaderControl.cpp" />
+    <ClCompile Include="..\..\src\IniTool.cpp" />
     <ClCompile Include="..\..\src\MainPage.cpp" />
     <ClCompile Include="..\..\src\OrxIniFile.cpp" />
     <ClCompile Include="..\..\src\StringUtility.cpp" />
@@ -27,13 +29,17 @@
     <ClInclude Include="..\..\include\orxIGTools.h" />
     <ClInclude Include="..\..\src\ContentsControl.h" />
     <ClInclude Include="..\..\src\Editor.h" />
+    <ClInclude Include="..\..\src\EditorPage.h" />
     <ClInclude Include="..\..\src\FooterControl.h" />
     <ClInclude Include="..\..\src\HeaderControl.h" />
+    <ClInclude Include="..\..\src\IniTool.h" />
     <ClInclude Include="..\..\src\MainPage.h" />
     <ClInclude Include="..\..\src\OrxIniFile.h" />
     <ClInclude Include="..\..\src\Singleton.h" />
     <ClInclude Include="..\..\src\StringUtility.h" />
+    <ClInclude Include="..\..\src\Tool.h" />
     <ClInclude Include="..\..\src\Types.h" />
+    <ClInclude Include="..\..\src\Version.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A40E30E0-4C33-409D-B6E1-91245D17202A}</ProjectGuid>

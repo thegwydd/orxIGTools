@@ -21,7 +21,7 @@ namespace orxIGTools
 			SetTabable(true);
 
 			m_pTitleLabel = new Gwen::Controls::Label(this);
-			m_pTitleLabel->Dock(Pos::Left);
+			m_pTitleLabel->Dock(Pos::Top);
 			}
 
 		//////////////////////////////////////////////////////////////////////////

@@ -1,8 +1,7 @@
 #pragma once
 
 #include <orx.h>
-#include <Gwen/Gwen.h>
-#include <Gwen/Controls/Base.h>
+#include "EditorPage.h"
 
 #include <Gwen/Controls/Label.h>
 
@@ -15,12 +14,12 @@ namespace orxIGTools
 
 		//////////////////////////////////////////////////////////////////////////
 		//! Header of the editor
-		class GWEN_EXPORT HeaderControl : public Gwen::Controls::Base
+		class GWEN_EXPORT HeaderControl : public EditorPage
 			{
 			public:
-				GWEN_CONTROL(HeaderControl, Gwen::Controls::Base);
+				GWEN_CONTROL(HeaderControl, EditorPage);
 
-				typedef Gwen::Controls::Base BaseClass;
+				typedef EditorPage BaseClass;
 
 				//! Sets the title of the header
 				void SetTitle(std::string title);
