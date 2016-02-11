@@ -51,13 +51,15 @@ orxSTATUS orxIGToolsTestApplication::Init()
 	/* Initialize the editor */
 	orxIGTools::Editor::Instance().Init();
 
-//	RunEditor();
+	RunEditor();
 
+/*
 	// Initialize events for game
 	InitializeEvents();
 	
 	// Initialize the scene
 	InitializeScene();
+*/
 
 	return result;
 	}

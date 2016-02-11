@@ -42,13 +42,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(GWEN_PATH)\include;$(ORX_GWEN_PATH)\include;$(ORX_PATH)\code\include;$(SCROLL_PATH)\include;$(ProjectDir)..\..\..\orxIGTools\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(GWEN_PATH)\lib;$(GWEN_PATH)\lib\windows\;$(ORX_GWEN_PATH)\lib\$(Platform)\$(Configuration);$(ORX_PATH)\code\lib\dynamic;$(GWEN_PATH)\lib\windows\vs2010\;$(ProjectDir)..\..\..\orxIGTools\lib\$(Platform)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(GWEN_PATH)\lib;$(GWEN_PATH)\lib\windows\;$(ORX_GWEN_PATH)\lib\$(Platform)\$(Configuration);$(ORX_PATH)\code\lib\dynamic;$(GWEN_PATH)\lib\windows\vs2010\;$(ProjectDir)..\..\..\orxIGTools\lib\$(Platform)\$(Configuration);$(BOOST_PATH)\stage\lib\;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\..\bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(GWEN_PATH)\include;$(ORX_GWEN_PATH)\include;$(ORX_PATH)\code\include;$(SCROLL_PATH)\include;$(ProjectDir)..\..\..\orxIGTools\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(GWEN_PATH)\lib;$(GWEN_PATH)\lib\windows\;$(ORX_GWEN_PATH)\lib\$(Platform)\$(Configuration);$(ORX_PATH)\code\lib\dynamic;$(GWEN_PATH)\lib\windows\vs2010\;$(ProjectDir)..\..\..\orxIGTools\lib\$(Platform)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(GWEN_PATH)\lib;$(GWEN_PATH)\lib\windows\;$(ORX_GWEN_PATH)\lib\$(Platform)\$(Configuration);$(ORX_PATH)\code\lib\dynamic;$(GWEN_PATH)\lib\windows\vs2010\;$(ProjectDir)..\..\..\orxIGTools\lib\$(Platform)\$(Configuration);$(BOOST_PATH)\stage\lib\;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\..\bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

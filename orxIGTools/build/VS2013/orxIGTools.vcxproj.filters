@@ -10,18 +10,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.cpp" />
-    <ClCompile Include="..\..\src\ContentsControl.cpp">
-      <Filter>MainPage</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\FooterControl.cpp">
-      <Filter>MainPage</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\HeaderControl.cpp">
-      <Filter>MainPage</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\MainPage.cpp">
-      <Filter>MainPage</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\StringUtility.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
@@ -32,23 +20,14 @@
       <Filter>Tools</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\EditorPage.cpp" />
+    <ClCompile Include="..\..\src\Logger.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\orxIGTools.h" />
     <ClInclude Include="..\..\src\Editor.h" />
     <ClInclude Include="..\..\src\Version.h" />
-    <ClInclude Include="..\..\src\ContentsControl.h">
-      <Filter>MainPage</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\FooterControl.h">
-      <Filter>MainPage</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\HeaderControl.h">
-      <Filter>MainPage</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\MainPage.h">
-      <Filter>MainPage</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\StringUtility.h">
       <Filter>Utility</Filter>
     </ClInclude>
@@ -68,11 +47,11 @@
       <Filter>Tools</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\EditorPage.h" />
+    <ClInclude Include="..\..\src\Logger.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="MainPage">
-      <UniqueIdentifier>{e661945d-7c74-4977-b071-ba1bf5f791fc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Utility">
       <UniqueIdentifier>{226b1f51-7bd6-4f5c-ae84-937c9d970946}</UniqueIdentifier>
     </Filter>

@@ -6,21 +6,35 @@ namespace orxIGTools
 	GWEN_CONTROL_CONSTRUCTOR(EditorPage)
 		{
 		}
-
+	
 	//////////////////////////////////////////////////////////////////////////
-	void EditorPage::OnPageInit()
+	EditorPage::~EditorPage()
 		{
+		TRACE_CALL(__FUNCTION__);
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	void EditorPage::OnPageShow(bool show)
+	std::string EditorPage::GetPageName()
 		{
+		return "EditorPage";
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	void EditorPage::OnPageClose()
+	void EditorPage::OnPageEnter()
 		{
+		TRACE_CALL(__FUNCTION__);
 		}
 
+	//////////////////////////////////////////////////////////////////////////
+	void EditorPage::OnPageLeave()
+		{
+		TRACE_CALL(__FUNCTION__);
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	void EditorPage::OnCommand()
+		{
+		TRACE_CALL(__FUNCTION__);
+		}
 
 	}

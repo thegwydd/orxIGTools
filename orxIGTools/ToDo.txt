@@ -105,3 +105,50 @@ ORX_GWEN_PATH	- path to orxGwen folder
 
 
 
+
+
++++ Editor +++
+
+Game Callbacks
+	orxGame
+		void Pause() = 0
+		void Run() = 0
+		void ReloadCurrentScene() = 0
+		void LoadScene(string scene_name) = 0
+
+The game must derive from orxGame and implement missing functions
+When the editor starts, all viewport must be hidden. 
+The editor will use it's own viewport
+
+
+Header: 
+	Product info
+	Page path info
+
+Footer
+	Back button
+	Exit button
+
+
+enum MainButton
+	Exit
+	Back
+	Save
+
+class IEditor
+	AddTool
+	GetToolByTarget
+	OnToolExit
+
+class Editor : public IEditor
+
+class ITool
+class Tool : public ITool
+
+ 
+
+
+
+
+
+

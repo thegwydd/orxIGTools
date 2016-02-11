@@ -55,10 +55,8 @@ namespace orxIGTools
 			virtual std::string GetIconRelativePath() = 0;
 			//! Gets the tool target entity name
 			virtual std::string GetTarget() = 0;
-			//! Initializes the Tool 
-			virtual bool Initialize(Gwen::Controls::Base * pParent) = 0;
 			//! Creates a ToolControl
-			virtual EditorPage * GetPageControl() = 0;
+			virtual EditorPage * CreatePageControl(Gwen::Controls::Base * pParent) = 0;
 
 		};
 	
