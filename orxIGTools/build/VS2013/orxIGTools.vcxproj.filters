@@ -23,6 +23,9 @@
     <ClCompile Include="..\..\src\Logger.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\SectionTypeSelectionDialog.cpp">
+      <Filter>Tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\orxIGTools.h" />
@@ -49,6 +52,9 @@
     <ClInclude Include="..\..\src\EditorPage.h" />
     <ClInclude Include="..\..\src\Logger.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\SectionTypeSelectionDialog.h">
+      <Filter>Tools</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

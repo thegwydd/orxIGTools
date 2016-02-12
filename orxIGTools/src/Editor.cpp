@@ -1,13 +1,24 @@
 #include "Editor.h"
-
 #include "IniTool.h"
 #include "Version.h"
+
+#include <boost/filesystem.hpp>
 
 using namespace Gwen;
 using namespace Gwen::Controls;
 using namespace Gwen::Skin;
 
 using namespace orxGwen::Utility;
+
+//#define GWEN_THEME	"DefaultSkin.png"
+//#define GWEN_THEME	"Dark-Orange Theme.png"
+#define GWEN_THEME	"orxIGTools_Skin.png"
+
+
+#define LOGO_IMAGE	"orxIGToolsLogo.png"
+#define EXIT_IMAGE	"orxIGToolsExit.png"
+#define BACK_IMAGE	"orxIGToolsBack.png"
+
 
 namespace orxIGTools
 	{
@@ -24,7 +35,10 @@ namespace orxIGTools
 		m_pSkin(nullptr),
 		m_pRenderer(nullptr),
 		m_pCanvas(nullptr),
-		m_pCurrentPage(nullptr)
+		m_pCurrentPage(nullptr),
+		m_FramesInLastSecond(0),
+		m_LastFPS_Update(0),
+		m_ImagesFolderName(".")
 		{
 		AddTool(std::make_shared<IniTool>());
 		}
@@ -32,6 +46,18 @@ namespace orxIGTools
 	//////////////////////////////////////////////////////////////////////////
 	Editor::~Editor()
 		{
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	void Editor::SetImagesFolderName(std::string folder_name)
+		{
+		m_ImagesFolderName = folder_name;
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	std::string Editor::GetImagesFolderName()
+		{
+		return m_ImagesFolderName;
 		}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -86,8 +112,7 @@ namespace orxIGTools
 
 		// Create a GWEN skin
 		m_pSkin = new TexturedBase(m_pRenderer);
-		//m_pSkin->Init("DefaultSkin.png");
-		m_pSkin->Init("Dark-Orange Theme.png");
+		m_pSkin->Init(GetImagePath(GWEN_THEME).c_str());
 		}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -97,7 +122,7 @@ namespace orxIGTools
 		m_pCanvas = new Canvas(m_pSkin);
 		m_pCanvas->SetSize(GetScreenSize());
 		m_pCanvas->SetDrawBackground(false);
-		m_pCanvas->SetBackgroundColor(Gwen::Color(150, 170, 170, 255));
+		m_pCanvas->SetBackgroundColor(Gwen::Colors::Black);
 		m_pCanvas->SetPadding(Padding(1, 0, 1, 1));
 
 		// Initialize input
@@ -156,6 +181,17 @@ namespace orxIGTools
 			{
 			if ((_pstEvent->eType == orxEVENT_TYPE_RENDER) && (_pstEvent->eID == orxRENDER_EVENT_STOP))
 				{
+				m_FramesInLastSecond++;
+				orxDOUBLE now = orxSystem_GetSystemTime();
+				orxDOUBLE diff = now - m_LastFPS_Update;
+
+				if (diff >= 1)
+					{
+					TRACE_NFO("FPS : %d", m_FramesInLastSecond);
+					m_FramesInLastSecond = 0;
+					m_LastFPS_Update = now;
+					}
+
 				m_pCanvas->DoThink();
 				m_pCanvas->RenderCanvas();
 				}
@@ -253,40 +289,55 @@ namespace orxIGTools
 		ss << "v" << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_REVISION;
 		std::string version = ss.str();
 
-		m_pHeaderCtrl = new Layout::Center(m_pDockBase);
-		m_pHeaderCtrl->SetMouseInputEnabled(true);
-		m_pHeaderCtrl->SetKeyboardInputEnabled(false);
-		m_pHeaderCtrl->SetTabable(true);
-		m_pHeaderCtrl->SetWidth(parent->GetSize().x);
-		m_pHeaderCtrl->SetHeight(HEADER_HEIGHT);
-		m_pHeaderCtrl->Dock(Pos::Top);
+		Layout::Center * header_container = new Layout::Center(m_pDockBase);
+		header_container->SetMouseInputEnabled(true);
+		header_container->SetKeyboardInputEnabled(false);
+		header_container->SetTabable(true);
+		header_container->Dock(Pos::Top);
 
-		m_pTitleLabel = new Label(m_pHeaderCtrl);
-		m_pTitleLabel->SetHeight(HEADER_HEIGHT / 2);
-		m_pTitleLabel->SetText("orxIGTools " + version + " by Denis Brachet (aka Ainvar)");
-		m_pTitleLabel->Dock(Pos::Top);
+		m_pLogoPanel = new ImagePanel(header_container);
+		m_pLogoPanel->SetImage(GetImagePath(LOGO_IMAGE).c_str());
+		m_pLogoPanel->Dock(Pos::Left);
+		m_pLogoPanel->SetWidth(m_pLogoPanel->TextureWidth());
+		m_pLogoPanel->SetHeight(m_pLogoPanel->TextureHeight());
 
-		m_pPagePathLabel = new Label(m_pHeaderCtrl);
-		m_pPagePathLabel->SetHeight(HEADER_HEIGHT / 2);
-		m_pPagePathLabel->SetText("Main->Pippo->Pluto->Paperino");
-		m_pPagePathLabel->SetTextColor(Gwen::Colors::Red);
-		m_pPagePathLabel->Dock(Pos::Top);
+		m_pVersionLabel = new Label(header_container);
+		m_pVersionLabel->SetText(version);
+		m_pVersionLabel->Dock(Pos::Left);
 
-		m_pFooterCtrl = new Layout::Center(m_pDockBase);
-		m_pFooterCtrl->SetHeight(FOOTER_HEIGHT);
-		m_pFooterCtrl->Dock(Pos::Bottom);
+		header_container->SizeToChildren();
 
-		m_pBackButton = new Button(m_pFooterCtrl);
+		Layout::Center * navigation_container = new Layout::Center(m_pDockBase);
+		navigation_container = new Layout::Center(m_pDockBase);
+		navigation_container->SetMouseInputEnabled(true);
+		navigation_container->SetKeyboardInputEnabled(false);
+		navigation_container->SetTabable(true);
+		navigation_container->Dock(Pos::Top);
+
+		m_pPathLabel = new TextBox(navigation_container);
+		m_pPathLabel->SetText("Main::Page::Path");
+		m_pPathLabel->SetTextColor(Gwen::Colors::Yellow);
+		m_pPathLabel->SetEditable(false);
+		m_pPathLabel->Dock(Pos::Top);
+
+		Layout::Center * buttons_container = new Layout::Center(m_pDockBase);
+		buttons_container->SetHeight(FOOTER_HEIGHT);
+		buttons_container->Dock(Pos::Bottom);
+
+		m_pBackButton = new Button(buttons_container);
 		m_pBackButton->SetText("Back");
-		m_pBackButton->SetImage("orxIGToolsBack.png");
+		m_pBackButton->SetImage(GetImagePath(BACK_IMAGE).c_str());
 		m_pBackButton->Dock(Pos::Left);
 		m_pBackButton->onPress.Add(this, &Editor::OnBackPressed);
 
-		m_pExitButton = new Button(m_pFooterCtrl);
+		m_pExitButton = new Button(buttons_container);
 		m_pExitButton->SetText("Exit");
-		m_pExitButton->SetImage("orxIGToolsExit.png");
+		m_pExitButton->SetImage(GetImagePath(EXIT_IMAGE).c_str());
 		m_pExitButton->Dock(Pos::Right);
 		m_pExitButton->onPress.Add(this, &Editor::OnExitPressed);
+
+		navigation_container->SizeToChildren();
+
 
 		// create the container of contents
 		m_pPageContainer = new Layout::Center(m_pDockBase);
@@ -335,24 +386,6 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	void Editor::SetTitle(std::string title)
-		{
-		if (m_pTitleLabel)
-			m_pTitleLabel->SetText(title);
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	std::string Editor::GetTitle()
-		{
-		std::string ret;
-
-		if (m_pTitleLabel)
-			ret = m_pTitleLabel->GetText().c_str();
-
-		return ret;
-		}
-
-	//////////////////////////////////////////////////////////////////////////
 	void Editor::OnBackPressed(Gwen::Event::Info info)
 		{
 		ShowTool("");
@@ -383,7 +416,7 @@ namespace orxIGTools
 			if (image_path.empty() == false)
 				button->SetImage(image_path, false);
 
-			button->SetSize(300, 32);
+			button->SetSize(300, 40);
 			button->onPress.Add(this, &Editor::OnToolSelected, tool.get());
 			}
 
@@ -425,7 +458,16 @@ namespace orxIGTools
 				ss << "::";
 			}
 
-		m_pPagePathLabel->SetText(ss.str().c_str());
+		m_pPathLabel->SetText(ss.str().c_str());
 		}
+
+	//////////////////////////////////////////////////////////////////////////
+	std::string Editor::GetImagePath(std::string image_filename)
+		{
+		boost::filesystem::path path = m_ImagesFolderName;
+		path /= image_filename;
+		return path.string();
+		}
+
 
 	}

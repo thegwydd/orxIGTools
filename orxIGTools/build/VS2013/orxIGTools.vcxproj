@@ -20,6 +20,7 @@
     <ClCompile Include="..\..\src\IniTool.cpp" />
     <ClCompile Include="..\..\src\Logger.cpp" />
     <ClCompile Include="..\..\src\OrxIniFile.cpp" />
+    <ClCompile Include="..\..\src\SectionTypeSelectionDialog.cpp" />
     <ClCompile Include="..\..\src\StringUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -29,6 +30,7 @@
     <ClInclude Include="..\..\src\IniTool.h" />
     <ClInclude Include="..\..\src\Logger.h" />
     <ClInclude Include="..\..\src\OrxIniFile.h" />
+    <ClInclude Include="..\..\src\SectionTypeSelectionDialog.h" />
     <ClInclude Include="..\..\src\Singleton.h" />
     <ClInclude Include="..\..\src\StringUtility.h" />
     <ClInclude Include="..\..\src\Tool.h" />

@@ -15,6 +15,8 @@
 #include <Gwen/Controls/DockBase.h>
 #include <Gwen/Controls/Layout/Position.h>
 #include <Gwen/Controls/StatusBar.h>
+#include <Gwen/Controls/ImagePanel.h>
+#include <Gwen/Controls/TextBox.h>
 #include <Gwen/Controls/Menu.h>
 #include <Gwen/DragAndDrop.h>
 #include <Gwen/ToolTip.h>
@@ -57,6 +59,12 @@ namespace orxIGTools
 			~Editor();
 
 		public:
+			//! Sets the folder name of where orxIGTools images are
+			void				SetImagesFolderName(std::string folder_name);
+			//! Sets the folder name of where orxIGTools images are
+			std::string			GetImagesFolderName();
+
+
 			//! Initializes the editor
 			orxSTATUS			Init();
 			//! Updates the editor
@@ -82,16 +90,15 @@ namespace orxIGTools
 			void				OnToolSelected(Event::Info info);
 			//! Shows a page
 			void				ShowTool(std::string target);
-			//! Sets the title of the header
-			void				SetTitle(std::string title);
-			//! Gets the title of the header
-			std::string			GetTitle();
 			//! Called when the Back Button is pressed
 			void				OnBackPressed(Event::Info info);
 			//! Called when the Exit Button is pressed
 			void				OnExitPressed(Event::Info info);
 			//! Fills the contents with the list of tools
 			void				ShowTools(Layout::Center * pParent);
+
+			//! Gets a path to use to get an image
+			std::string			GetImagePath(std::string image_filename);
 
 		private:
 			//!	Initializes Gwen stuff
@@ -123,11 +130,11 @@ namespace orxIGTools
 			//! Updates page stack label
 			void				UpdatePageStackLabel();
 
-
 		private: // Statics
 			static orxSTATUS orxFASTCALL StaticEventHandler(const orxEVENT *_pstEvent);
 
 		private:
+			std::string						m_ImagesFolderName;
 			//! Current state
 			bool							m_Visible;
 			//! Loaded orx Ini files
@@ -143,21 +150,22 @@ namespace orxIGTools
 			//! Base Canvas (root) 
 			Canvas *						m_pCanvas;
 
+			int								m_FramesInLastSecond;
+			orxDOUBLE						m_LastFPS_Update;
+
 			//! Main page control
 			WINDOW_BASE_CLASS *				m_MainWindow;
 
 			//! Main Dock control
 			DockBase *						m_pDockBase;
-			//! Header container control
-			Layout::Center *				m_pHeaderCtrl;
 			//! Header control 
-			Label *							m_pTitleLabel;
+			Controls::ImagePanel *			m_pLogoPanel;
 			//! Header control 
-			Label *							m_pPagePathLabel;
+			Label *							m_pVersionLabel;
+			//! Header control 
+			TextBox *						m_pPathLabel;
 			//! Container of tool controls
 			Layout::Center *				m_pPageContainer;
-			//! Footer container control
-			Layout::Center *				m_pFooterCtrl;
 			//! Back button
 			Button *						m_pBackButton;
 			//! Exit button

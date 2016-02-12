@@ -72,8 +72,9 @@ orxSTATUS orxIGToolsTestApplication::Run()
 	if (!orxIGTools::Editor::Instance().IsVisible() && orxInput_IsActive("ToggleEditor"))
 		RunEditor();
 
-	/* Update the editor */
-	orxIGTools::Editor::Instance().Run();
+	if (orxIGTools::Editor::Instance().IsVisible())
+		/* Update the editor */
+		orxIGTools::Editor::Instance().Run();
 
 	return result;
 	}

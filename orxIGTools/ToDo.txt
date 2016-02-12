@@ -13,7 +13,7 @@ Copyright : Denis Brachet 2016
 
 - Implement a GWEN widget for browsing the entire collection of objects (from ini files) 
   - it's a tree view that shows all folders and ini files.
-  - each Record can be an include, comment or section
+  - each Record can be an include or section
   - for section and keys it must keep track of inheritance (section inheritance and/or value inheritance)
   - you can expand ini file to see and select the entity to edit or to copy from (to create a new one as new copy or derivative)
   - you can expand a section to see values and add new keys or edit existing keys
