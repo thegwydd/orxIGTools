@@ -1,5 +1,6 @@
 #include "Editor.h"
 #include "IniTool.h"
+#include "GraphicsTool.h"
 #include "Version.h"
 
 #include <boost/filesystem.hpp>
@@ -13,7 +14,6 @@ using namespace orxGwen::Utility;
 //#define GWEN_THEME	"DefaultSkin.png"
 //#define GWEN_THEME	"Dark-Orange Theme.png"
 #define GWEN_THEME	"orxIGTools_Skin.png"
-
 
 #define LOGO_IMAGE	"orxIGToolsLogo.png"
 #define EXIT_IMAGE	"orxIGToolsExit.png"
@@ -40,24 +40,40 @@ namespace orxIGTools
 		m_LastFPS_Update(0),
 		m_ImagesFolderName(".")
 		{
+		// register default targets
+		AddTarget(TOOL_TARGET_INI);
+		AddTarget(TOOL_TARGET_GRAPHIC);
+
+		AddTarget(TOOL_TARGET_ANIMATION, "orxIGTools_IconAnimation.png");
+// 		AddTarget(TOOL_TARGET_ANIMATIONKEY, "orxIGTools_IconAnimationKey.png");
+// 		AddTarget(TOOL_TARGET_ANIMATIONLINK, "orxIGTools_IconAnimationLink.png");
+// 		AddTarget(TOOL_TARGET_ANIMATIONSET, "orxIGTools_IconAnimationSet.png");
+		AddTarget(TOOL_TARGET_BODYPART, "orxIGTools_IconBodyPart.png");
+		AddTarget(TOOL_TARGET_BODY, "orxIGTools_IconBody.png");
+		AddTarget(TOOL_TARGET_CAMERA, "orxIGTools_IconCamera.png");
+		AddTarget(TOOL_TARGET_CLOCK, "orxIGTools_IconClock.png");
+// 		AddTarget(TOOL_TARGET_FXSLOT, "orxIGTools_IconFxSlot.png");
+		AddTarget(TOOL_TARGET_FX, "orxIGTools_IconFx.png");
+		AddTarget(TOOL_TARGET_GAMEOBJECT, "orxIGTools_IconGameObject.png");
+		AddTarget(TOOL_TARGET_FONT, "orxIGTools_IconFont.png");
+		AddTarget(TOOL_TARGET_JOINT, "orxIGTools_IconJoint.png");
+//		AddTarget(TOOL_TARGET_LAYER, "orxIGTools_IconLayer.png");
+		AddTarget(TOOL_TARGET_TEXTURE);
+		AddTarget(TOOL_TARGET_SCENE, "orxIGTools_IconScene.png");
+		AddTarget(TOOL_TARGET_SHADER, "orxIGTools_IconShader.png");
+		AddTarget(TOOL_TARGET_SOUND, "orxIGTools_IconSound.png");
+		AddTarget(TOOL_TARGET_SPAWNER, "orxIGTools_IconSpawner.png");
+		AddTarget(TOOL_TARGET_TRACK, "orxIGTools_IconTrack.png");
+		AddTarget(TOOL_TARGET_VIEWPORT, "orxIGTools_IconViewport.png");
+
+		// add default tools
 		AddTool(std::make_shared<IniTool>());
+		AddTool(std::make_shared<GraphicsTool>());
 		}
 
 	//////////////////////////////////////////////////////////////////////////
 	Editor::~Editor()
 		{
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	void Editor::SetImagesFolderName(std::string folder_name)
-		{
-		m_ImagesFolderName = folder_name;
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	std::string Editor::GetImagesFolderName()
-		{
-		return m_ImagesFolderName;
 		}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -246,11 +262,108 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
+	void Editor::SetImagesFolderName(std::string folder_name)
+		{
+		m_ImagesFolderName = folder_name;
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	std::string Editor::GetImagesFolderName()
+		{
+		return m_ImagesFolderName;
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	bool Editor::AddTarget(std::string target, std::string icon_filename)
+		{
+		bool ret(false);
+
+		if (!TargetExists(target))
+			{
+			TargetInfo info;
+			info.m_TargetName = target;
+			info.m_IconFilename = icon_filename;
+			info.m_Tool = nullptr;
+			m_TargetInfos.push_back(info);
+			ret = true;
+			}
+		
+		return ret;
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	bool Editor::TargetExists(std::string target)
+		{
+		return (GetTarget(target) != nullptr);
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	StringList Editor::GetTargets()
+		{
+		StringList ret;
+
+		for (TargetInfo & target : m_TargetInfos)
+			ret.push_back(target.m_TargetName);
+
+		return ret;
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	TargetInfo * Editor::GetTarget(std::string target)
+		{
+		TargetInfo * ret = nullptr;
+
+		auto it = std::find_if(m_TargetInfos.begin(), m_TargetInfos.end(), [&](TargetInfo & info) { return (info.m_TargetName == target); });
+		if (it != m_TargetInfos.end())
+			ret = &(*it);
+
+		return ret;
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	std::string Editor::GetTargetIconFileName(std::string target_name)
+		{
+		std::string ret;
+
+		TargetInfo * info = GetTarget(target_name);
+		if (info)
+			ret = GetImagePath(info->m_IconFilename);
+
+		return ret;
+		}
+
+	//////////////////////////////////////////////////////////////////////////
 	bool Editor::AddTool(Tool::Ptr tool)
 		{
-		bool ret(std::find_if(m_Tools.begin(), m_Tools.end(), [=](Tool::Ptr t) { return (t->GetName() == tool->GetName()); }) == m_Tools.end());
-		if (ret)
-			m_Tools.push_back(tool);
+		bool ret = false;
+
+		TargetInfo * info = GetTarget(tool->GetTarget());
+
+		if (info)
+			{
+			info->m_Tool = tool;
+			
+			std::string filename = tool->GetIconRelativePath();
+			if (!filename.empty())
+				info->m_IconFilename = filename;
+
+			ret = true;
+			}
+
+		return ret;
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	Tools Editor::GetTools()
+		{
+		Tools ret;
+
+		for (TargetInfo & info : m_TargetInfos)
+			{
+			if (info.m_Tool != nullptr)
+				ret.push_back(info.m_Tool);
+			}
+
 		return ret;
 		}
 
@@ -259,9 +372,10 @@ namespace orxIGTools
 		{
 		Tool::Ptr ret;
 
-		Tools::iterator it = std::find_if(m_Tools.begin(), m_Tools.end(), [&](Tool::Ptr t) { return (t->GetTarget() == target); });
-		if (it != m_Tools.end())
-			ret = *it;
+		TargetInfo * info = GetTarget(target);
+		
+		if (info)
+			ret = info->m_Tool;
 
 		return ret;
 		}
@@ -338,9 +452,8 @@ namespace orxIGTools
 
 		navigation_container->SizeToChildren();
 
-
 		// create the container of contents
-		m_pPageContainer = new Layout::Center(m_pDockBase);
+		m_pPageContainer = new Controls::Layout::Center(m_pDockBase);
 		// and make it to get as much space as it can
 		m_pPageContainer->Dock(Pos::Fill);
 
@@ -348,15 +461,58 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
+	void Editor::ShowTools(Gwen::Controls::Base * pParent)
+		{
+		// clear the parent
+		pParent->RemoveAllChildren();
+
+		Gwen::Controls::Base * table = new Gwen::Controls::Base(pParent);
+		table->SetMargin(Gwen::Margin(2, 2, 2, 2));
+
+		// add elements
+		Button * prev_button = nullptr;
+		for (Tool::Ptr tool : Editor::Instance().GetTools())
+			{
+			std::string name = tool->GetName();
+			std::string image_path = tool->GetIconRelativePath();
+
+			Button * button = new Button(table);
+			button->SetSize(300, 40);
+
+			int y = (prev_button) ? (prev_button->Bottom()) : 0;
+			prev_button = button;
+
+			button->SetPos(0, y);
+			button->SetText(name);
+
+			if (image_path.empty() == false)
+				button->SetImage(image_path, false);
+
+			button->onPress.Add(this, &Editor::OnToolSelected, tool.get());
+			}
+
+		table->SizeToChildren();
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	void Editor::OnToolSelected(Gwen::Event::Info info)
+		{
+		Tool * pTool = (Tool *)info.Data;
+		if (pTool)
+			ShowTool(pTool->GetTarget());
+		}
+
+	//////////////////////////////////////////////////////////////////////////
 	void Editor::ShowTool(std::string target)
 		{
+		// remove the page
+		m_pPageContainer->RemoveAllChildren();
+
 		// close last page
 		if (m_pCurrentPage)
 			{
 			// tell the page we're leaving
 			m_pCurrentPage->OnPageLeave();
-			// remove the page
-			m_pPageContainer->RemoveAllChildren();
 			// update page stack
 			PopPage();
 			// delete the page
@@ -364,6 +520,12 @@ namespace orxIGTools
 			// reset last page
 			m_pCurrentPage = nullptr;
 			}
+
+		// invalidate main page
+		m_pCanvas->Invalidate();
+		m_pCanvas->InvalidateChildren();
+		orxDisplay_ClearBitmap(orxDisplay_GetScreenBitmap(), orxRGBA_Set(0, 0, 0, 0));
+
 
 		Tool::Ptr tool = GetToolByTarget(target);
 		if (tool)
@@ -396,38 +558,6 @@ namespace orxIGTools
 		{
 		m_pCanvas->RemoveAllChildren();
 		Show(false);
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	void Editor::ShowTools(Layout::Center * pParent)
-		{
-		// clear the parent
-		pParent->RemoveAllChildren();
-
-		// add elements
-		for (Tool::Ptr tool : Editor::Instance().GetTools())
-			{
-			std::string name = tool->GetName();
-			std::string image_path = tool->GetIconRelativePath();
-
-			Button * button = new Button(m_pPageContainer);
-			button->SetText(name);
-
-			if (image_path.empty() == false)
-				button->SetImage(image_path, false);
-
-			button->SetSize(300, 40);
-			button->onPress.Add(this, &Editor::OnToolSelected, tool.get());
-			}
-
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	void Editor::OnToolSelected(Gwen::Event::Info info)
-		{
-		Tool * pTool = (Tool *)info.Data;
-		if (pTool)
-			ShowTool(pTool->GetTarget());
 		}
 
 	//////////////////////////////////////////////////////////////////////////

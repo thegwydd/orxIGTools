@@ -6,11 +6,18 @@ Copyright : Denis Brachet 2016
 
 +++ TODO +++
 
-- Implement an Ini parser/saver class with support for comments and that will mantain comments and blank spaces when saving
+- Implement an Ini parser/saver class with support for comments [only comments in the same line of a section/include/key]
+- Use GWEN (it uses the system) for file and directory browsing
 
-
-- Implement a GWEN widget for file and directory browsing
-
+- INI Editor
+	. Show folders/files/includes + section/keys
+	. undo and redo
+	. cut/copy/paste a section
+	. add/remove section/include/key
+	. edit section as free or casted target (animation, graphics, object, etc..)
+	. edit include
+	. edit key
+	
 - Implement a GWEN widget for browsing the entire collection of objects (from ini files) 
   - it's a tree view that shows all folders and ini files.
   - each Record can be an include or section

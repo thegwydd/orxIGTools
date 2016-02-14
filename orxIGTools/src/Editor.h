@@ -8,22 +8,9 @@
 
 #include <orx.h>
 #include <Gwen/Gwen.h>
+#include <Gwen/Controls.h>
 #include <Gwen/Skins/Simple.h>
 #include <Gwen/Skins/TexturedBase.h>
-#include <Gwen/Controls/Base.h>
-#include <Gwen/Controls/WindowControl.h>
-#include <Gwen/Controls/DockBase.h>
-#include <Gwen/Controls/Layout/Position.h>
-#include <Gwen/Controls/StatusBar.h>
-#include <Gwen/Controls/ImagePanel.h>
-#include <Gwen/Controls/TextBox.h>
-#include <Gwen/Controls/Menu.h>
-#include <Gwen/DragAndDrop.h>
-#include <Gwen/ToolTip.h>
-
-#ifndef GWEN_NO_ANIMATION
-#include <Gwen/Anim.h>
-#endif
 
 #include <orxGwen.h>
 
@@ -43,9 +30,19 @@ using namespace Gwen::Skin;
 
 #define WINDOW_BASE_CLASS		Controls::Base /*WindowControl*/
 
-
 namespace orxIGTools
 	{
+
+	//////////////////////////////////////////////////////////////////////////
+	//! Class that holds target informations
+	struct TargetInfo
+		{
+		std::string	m_TargetName;
+		std::string m_IconFilename;
+		Tool::Ptr	m_Tool;
+		};
+
+	typedef std::list<TargetInfo> TargetInfoList;
 
 	//////////////////////////////////////////////////////////////////////////
 	//! Main editor class, the one you need to start the engine
@@ -78,11 +75,21 @@ namespace orxIGTools
 			//! Tells if the editor is visible
 			bool				IsVisible() { return m_Visible; };
 
+			//! Adds a target name
+			bool				AddTarget(std::string target, std::string icon_filename = "");
+			//! Tests if a target exists
+			bool				TargetExists(std::string target);
+			//! Get all targets
+			StringList			GetTargets();
+			//! Get all targets
+			TargetInfo *		GetTarget(std::string target);
+			//! Get target icon file name
+			std::string			GetTargetIconFileName(std::string target_name);
 
 			//! Adds a tool
 			bool				AddTool(Tool::Ptr tool);
 			//! Get tool list
-			const Tools			GetTools() { return m_Tools; };
+			Tools				GetTools();
 			//! Adds a tool
 			Tool::Ptr			GetToolByTarget(std::string target);
 
@@ -95,7 +102,7 @@ namespace orxIGTools
 			//! Called when the Exit Button is pressed
 			void				OnExitPressed(Event::Info info);
 			//! Fills the contents with the list of tools
-			void				ShowTools(Layout::Center * pParent);
+			void				ShowTools(Gwen::Controls::Base * pParent);
 
 			//! Gets a path to use to get an image
 			std::string			GetImagePath(std::string image_filename);
@@ -140,7 +147,7 @@ namespace orxIGTools
 			//! Loaded orx Ini files
 			OrxIniFiles						m_Files;
 			//! Registered tools
-			Tools							m_Tools;
+			TargetInfoList					m_TargetInfos;
 			//! Skin to use with the renderer
 			Gwen::Skin::TexturedBase *		m_pSkin;
 			//! Renderer for GWEN
@@ -149,13 +156,12 @@ namespace orxIGTools
 			orxGwen::Input					m_GwenInput;
 			//! Base Canvas (root) 
 			Canvas *						m_pCanvas;
-
+			//! counter of frames rendered in last second
 			int								m_FramesInLastSecond;
+			//! time of last FPS update
 			orxDOUBLE						m_LastFPS_Update;
-
 			//! Main page control
 			WINDOW_BASE_CLASS *				m_MainWindow;
-
 			//! Main Dock control
 			DockBase *						m_pDockBase;
 			//! Header control 

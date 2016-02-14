@@ -37,4 +37,16 @@ namespace orxIGTools
 		TRACE_CALL(__FUNCTION__);
 		}
 
+	//////////////////////////////////////////////////////////////////////////
+	void EditorPage::SetEditSection(Section::Ptr section)
+		{
+		m_Section = section;
+		}
+
+	Section::Ptr EditorPage::GetEditSection()
+		{
+		return m_Section;
+		}
+
+
 	}

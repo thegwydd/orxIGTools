@@ -4,13 +4,6 @@
 #include "Tool.h"
 #include "EditorPage.h"
 
-#include <Gwen/Controls/TreeControl.h>
-#include <Gwen/Controls/TreeNode.h>
-#include "Gwen/Controls/ScrollControl.h"
-#include "Gwen/Controls/Button.h"
-#include <Gwen/Controls/Layout/Position.h>
-#include "Gwen/Controls/CrossSplitter.h"
-
 #define TOOL_TARGET_INI		"Ini"
 
 #define NODE_TYPE_TAG		"NodeType"
@@ -19,19 +12,6 @@
 namespace orxIGTools
 	{
 
-	class IniToolPage;
-	//////////////////////////////////////////////////////////////////////////
-	class IniTool : public Tool
-		{
-		public:
-			virtual std::string GetName() override;
-			virtual std::string GetIconRelativePath() override;
-			virtual std::string GetTarget() override;
-			virtual EditorPage * CreatePageControl(Gwen::Controls::Base * pParent) override;
-
-		protected:
-			IniToolPage *	m_Page;
-		};
 	
 	//////////////////////////////////////////////////////////////////////////
 	enum class NodeType
@@ -71,8 +51,6 @@ namespace orxIGTools
 
 
 		protected:
-			Gwen::Controls::CrossSplitter *		m_pSplitteCtrl;
-
 			Gwen::Controls::ScrollControl *		m_pTreeScrollCtrl;
 			Gwen::Controls::TreeControl *		m_pTreeCtrl;
 
@@ -89,6 +67,7 @@ namespace orxIGTools
 		};
 
 
+	DEFINE_TOOL(IniTool, "INI Tool", TOOL_TARGET_INI, "IniTool.png", IniToolPage);
 
 
 	}

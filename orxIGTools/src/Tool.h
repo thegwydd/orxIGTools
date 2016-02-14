@@ -6,9 +6,11 @@
 #include <string>
 #include <memory>
 #include <list>
+#include <map>
 
 #include <Gwen/Gwen.h>
-#include <Gwen/Controls/Base.h>
+#include <Gwen/Controls.h>
+#include <Gwen/Controls/Layout/Position.h>
 
 
 #define TOOL_TARGET_ANIMATION			"Animation"
@@ -33,6 +35,7 @@
 #define TOOL_TARGET_SPAWNER				"Spawner"
 #define TOOL_TARGET_TRACK				"Track"
 #define TOOL_TARGET_VIEWPORT			"Viewport"
+
 
 namespace orxIGTools
 	{
@@ -63,6 +66,17 @@ namespace orxIGTools
 	typedef std::list<Tool::Ptr> Tools;
 
 	}
+
+
+#define DEFINE_TOOL(_class_name, _name, _target, _icon, _page_class) 														   \
+		class _class_name : public Tool {																					   \
+			public:																											   \
+				virtual std::string GetName() { return _name; }																   \
+				virtual std::string GetIconRelativePath()  { return _icon; };												   \
+				virtual std::string GetTarget()  { return _target; };														   \
+				virtual EditorPage * CreatePageControl(Gwen::Controls::Base * pParent)  { return new _page_class(pParent); };  \
+			};																												   \
+
 
 
 #endif //__ORX_IGTOOLS_TOOL_H__

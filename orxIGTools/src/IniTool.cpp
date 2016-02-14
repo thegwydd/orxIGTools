@@ -4,7 +4,6 @@
 #include "Editor.h"
 #include "SectionTypeSelectionDialog.h"
 
-#include <Gwen/Controls/Layout/Position.h>
 #include <boost/filesystem.hpp>
 
 #define FOLDER_ICON			"folder_icon.png"
@@ -20,32 +19,6 @@
 
 namespace orxIGTools
 	{
-
-	//////////////////////////////////////////////////////////////////////////
-	std::string IniTool::GetName()
-		{
-		return "INI Tool";
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	std::string IniTool::GetIconRelativePath()
-		{
-		return "IniTool.png";
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	std::string IniTool::GetTarget()
-		{
-		return TOOL_TARGET_INI;
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	EditorPage *  IniTool::CreatePageControl(Gwen::Controls::Base * pParent)
-		{
-		return new IniToolPage(pParent);
-		}
-
-
 
 	//////////////////////////////////////////////////////////////////////////
 	GWEN_CONTROL_CONSTRUCTOR(IniToolPage)

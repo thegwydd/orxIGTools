@@ -2,8 +2,7 @@
 #define __ORX_IGTOOLS_SECTION_TYPE_SELECTION_H__
 
 #include <Controls/ModalDialog.h>
-
-#include <Gwen/Controls/Base.h>
+#include <Gwen/Controls.h>
 
 #define TOOL_TARGET_INI		"Ini"
 
