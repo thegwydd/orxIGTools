@@ -1,3 +1,4 @@
+#include "orxIGToolsPCH.h"
 #include "Logger.h"
 
 #include <stdarg.h>

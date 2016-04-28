@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -17,11 +17,17 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\Editor.cpp" />
     <ClCompile Include="..\..\src\EditorPage.cpp" />
+    <ClCompile Include="..\..\src\FooterView.cpp" />
     <ClCompile Include="..\..\src\GraphicsTool.cpp" />
-    <ClCompile Include="..\..\src\IniTool.cpp" />
+    <ClCompile Include="..\..\src\HeaderView.cpp" />
     <ClCompile Include="..\..\src\Logger.cpp" />
+    <ClCompile Include="..\..\src\NavigationView.cpp" />
+    <ClCompile Include="..\..\src\orxIGToolsPCH.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\src\OrxIniFile.cpp" />
-    <ClCompile Include="..\..\src\SectionTypeSelectionDialog.cpp" />
+    <ClCompile Include="..\..\src\ProjectFilesView.cpp" />
     <ClCompile Include="..\..\src\StringUtility.cpp" />
     <ClCompile Include="..\..\src\ViewportControl.cpp" />
   </ItemGroup>
@@ -29,11 +35,17 @@
     <ClInclude Include="..\..\include\orxIGTools.h" />
     <ClInclude Include="..\..\src\Editor.h" />
     <ClInclude Include="..\..\src\EditorPage.h" />
+    <ClInclude Include="..\..\src\Extensions.h" />
+    <ClInclude Include="..\..\src\FooterView.h" />
     <ClInclude Include="..\..\src\GraphicsTool.h" />
-    <ClInclude Include="..\..\src\IniTool.h" />
+    <ClInclude Include="..\..\src\HeaderView.h" />
+    <ClInclude Include="..\..\src\Images.h" />
     <ClInclude Include="..\..\src\Logger.h" />
+    <ClInclude Include="..\..\src\NavigationView.h" />
+    <ClInclude Include="..\..\src\orxIGToolsPCH.h" />
     <ClInclude Include="..\..\src\OrxIniFile.h" />
-    <ClInclude Include="..\..\src\SectionTypeSelectionDialog.h" />
+    <ClInclude Include="..\..\src\ProjectFilesView.h" />
+    <ClInclude Include="..\..\src\PropertySlider.h" />
     <ClInclude Include="..\..\src\Singleton.h" />
     <ClInclude Include="..\..\src\StringUtility.h" />
     <ClInclude Include="..\..\src\Tool.h" />
@@ -51,13 +63,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -81,12 +93,13 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeaderFile>orxIGToolsPCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -96,13 +109,14 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeaderFile>orxIGToolsPCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

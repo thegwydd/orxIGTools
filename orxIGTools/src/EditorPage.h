@@ -27,14 +27,18 @@ namespace orxIGTools
 			virtual void OnPageLeave();
 			virtual void OnCommand();
 
-			virtual void SetEditSection(Section::Ptr section);
-			virtual Section::Ptr GetEditSection();
+			virtual void SetEditSection(Section * section);
+			virtual Section * GetEditSection();
+
+			virtual void OnBoundsChanged(Gwen::Rect oldBounds) { Gwen::Controls::DockBase::OnBoundsChanged(oldBounds); Touch(); };
+			virtual void OnChildBoundsChanged(Gwen::Rect oldChildBounds, Base* pChild) { Gwen::Controls::DockBase::OnChildBoundsChanged(oldChildBounds, pChild); Touch(); };
+			virtual void OnScaleChanged() { Gwen::Controls::DockBase::OnScaleChanged(); Touch(); };
 
 		protected:
-			Section::Ptr	m_Section;
+			Section * m_Section;
 
 		protected:
-			friend class Gwen::Controls::Base;
+			friend class Gwen::Controls::Base;											   
 
 		};
 

@@ -1,7 +1,9 @@
-#include "Editor.h"
-#include "IniTool.h"
-#include "GraphicsTool.h"
+#include "orxIGToolsPCH.h"
 #include "Version.h"
+#include "Editor.h"
+#include "GraphicsTool.h"
+#include "StringUtility.h"
+#include "OrxIniFile.h"
 
 #include <boost/filesystem.hpp>
 
@@ -11,13 +13,6 @@ using namespace Gwen::Skin;
 
 using namespace orxGwen::Utility;
 
-//#define GWEN_THEME	"DefaultSkin.png"
-//#define GWEN_THEME	"Dark-Orange Theme.png"
-#define GWEN_THEME	"orxIGTools_Skin.png"
-
-#define LOGO_IMAGE	"orxIGToolsLogo.png"
-#define EXIT_IMAGE	"orxIGToolsExit.png"
-#define BACK_IMAGE	"orxIGToolsBack.png"
 
 
 namespace orxIGTools
@@ -37,38 +32,20 @@ namespace orxIGTools
 		m_pCanvas(nullptr),
 		m_pCurrentPage(nullptr),
 		m_FramesInLastSecond(0),
-		m_LastFPS_Update(0),
-		m_ImagesFolderName(".")
+		m_LastFPS_Update(0)
 		{
-		// register default targets
-		AddTarget(TOOL_TARGET_INI);
-		AddTarget(TOOL_TARGET_GRAPHIC);
+		boost::filesystem::path cwd = boost::filesystem::current_path();
+		cwd /= DEFAULT_ORX_IG_TOOLS_FOLDER;
+		cwd /= DEFAULT_IMAGES_FOLDER;
 
-		AddTarget(TOOL_TARGET_ANIMATION, "orxIGTools_IconAnimation.png");
-// 		AddTarget(TOOL_TARGET_ANIMATIONKEY, "orxIGTools_IconAnimationKey.png");
-// 		AddTarget(TOOL_TARGET_ANIMATIONLINK, "orxIGTools_IconAnimationLink.png");
-// 		AddTarget(TOOL_TARGET_ANIMATIONSET, "orxIGTools_IconAnimationSet.png");
-		AddTarget(TOOL_TARGET_BODYPART, "orxIGTools_IconBodyPart.png");
-		AddTarget(TOOL_TARGET_BODY, "orxIGTools_IconBody.png");
-		AddTarget(TOOL_TARGET_CAMERA, "orxIGTools_IconCamera.png");
-		AddTarget(TOOL_TARGET_CLOCK, "orxIGTools_IconClock.png");
-// 		AddTarget(TOOL_TARGET_FXSLOT, "orxIGTools_IconFxSlot.png");
-		AddTarget(TOOL_TARGET_FX, "orxIGTools_IconFx.png");
-		AddTarget(TOOL_TARGET_GAMEOBJECT, "orxIGTools_IconGameObject.png");
-		AddTarget(TOOL_TARGET_FONT, "orxIGTools_IconFont.png");
-		AddTarget(TOOL_TARGET_JOINT, "orxIGTools_IconJoint.png");
-//		AddTarget(TOOL_TARGET_LAYER, "orxIGTools_IconLayer.png");
-		AddTarget(TOOL_TARGET_TEXTURE);
-		AddTarget(TOOL_TARGET_SCENE, "orxIGTools_IconScene.png");
-		AddTarget(TOOL_TARGET_SHADER, "orxIGTools_IconShader.png");
-		AddTarget(TOOL_TARGET_SOUND, "orxIGTools_IconSound.png");
-		AddTarget(TOOL_TARGET_SPAWNER, "orxIGTools_IconSpawner.png");
-		AddTarget(TOOL_TARGET_TRACK, "orxIGTools_IconTrack.png");
-		AddTarget(TOOL_TARGET_VIEWPORT, "orxIGTools_IconViewport.png");
+		m_ImagesFolderName = cwd.string();
 
-		// add default tools
-		AddTool(std::make_shared<IniTool>());
-		AddTool(std::make_shared<GraphicsTool>());
+		/* register default extensions and images */
+		RegisterFileExtension(FileExtension(INI_EXTENSION, FILE_ICON));
+		RegisterFileExtension(FileExtension(PNG_EXTENSION, IMAGE_FILE_ICON));
+		RegisterFileExtension(FileExtension(JPG_EXTENSION, IMAGE_FILE_ICON));
+		RegisterFileExtension(FileExtension(BMP_EXTENSION, IMAGE_FILE_ICON));
+		RegisterFileExtension(FileExtension(TTF_EXTENSION, FONT_FILE_ICON));
 		}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -158,7 +135,7 @@ namespace orxIGTools
 		if (m_pCanvas)
 			{
 			m_pCanvas->RemoveAllChildren();
-			delete m_pCanvas;
+			m_pCanvas->DelayedDelete();
 			m_pCanvas = nullptr;
 			}
 
@@ -203,7 +180,7 @@ namespace orxIGTools
 
 				if (diff >= 1)
 					{
-					TRACE_NFO("FPS : %d", m_FramesInLastSecond);
+//					TRACE_NFO("FPS : %d", m_FramesInLastSecond);
 					m_FramesInLastSecond = 0;
 					m_LastFPS_Update = now;
 					}
@@ -232,6 +209,7 @@ namespace orxIGTools
 			orxDisplay_GetScreenSize(&width, &height);
 			Gwen::Rect canvas_bounds(0, 0, width, height);
 			m_pCanvas->SetBounds(canvas_bounds);
+			m_pCanvas->InvalidateChildren();
 			}
 		}
 
@@ -274,113 +252,6 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	bool Editor::AddTarget(std::string target, std::string icon_filename)
-		{
-		bool ret(false);
-
-		if (!TargetExists(target))
-			{
-			TargetInfo info;
-			info.m_TargetName = target;
-			info.m_IconFilename = icon_filename;
-			info.m_Tool = nullptr;
-			m_TargetInfos.push_back(info);
-			ret = true;
-			}
-		
-		return ret;
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	bool Editor::TargetExists(std::string target)
-		{
-		return (GetTarget(target) != nullptr);
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	StringList Editor::GetTargets()
-		{
-		StringList ret;
-
-		for (TargetInfo & target : m_TargetInfos)
-			ret.push_back(target.m_TargetName);
-
-		return ret;
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	TargetInfo * Editor::GetTarget(std::string target)
-		{
-		TargetInfo * ret = nullptr;
-
-		auto it = std::find_if(m_TargetInfos.begin(), m_TargetInfos.end(), [&](TargetInfo & info) { return (info.m_TargetName == target); });
-		if (it != m_TargetInfos.end())
-			ret = &(*it);
-
-		return ret;
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	std::string Editor::GetTargetIconFileName(std::string target_name)
-		{
-		std::string ret;
-
-		TargetInfo * info = GetTarget(target_name);
-		if (info)
-			ret = GetImagePath(info->m_IconFilename);
-
-		return ret;
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	bool Editor::AddTool(Tool::Ptr tool)
-		{
-		bool ret = false;
-
-		TargetInfo * info = GetTarget(tool->GetTarget());
-
-		if (info)
-			{
-			info->m_Tool = tool;
-			
-			std::string filename = tool->GetIconRelativePath();
-			if (!filename.empty())
-				info->m_IconFilename = filename;
-
-			ret = true;
-			}
-
-		return ret;
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	Tools Editor::GetTools()
-		{
-		Tools ret;
-
-		for (TargetInfo & info : m_TargetInfos)
-			{
-			if (info.m_Tool != nullptr)
-				ret.push_back(info.m_Tool);
-			}
-
-		return ret;
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	Tool::Ptr Editor::GetToolByTarget(std::string target)
-		{
-		Tool::Ptr ret;
-
-		TargetInfo * info = GetTarget(target);
-		
-		if (info)
-			ret = info->m_Tool;
-
-		return ret;
-		}
-
-	//////////////////////////////////////////////////////////////////////////
 	void Editor::CreateMainWindow(Controls::Base * parent)
 		{
 		// create the main page
@@ -398,112 +269,31 @@ namespace orxIGTools
 		// and make it to fill entire screen
 		m_pDockBase->Dock(Pos::Fill);
 
-		// create main controls as child of the docking base
-		std::stringstream ss;
-		ss << "v" << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_REVISION;
-		std::string version = ss.str();
+		m_HeaderView.Create(m_pDockBase);
 
-		Layout::Center * header_container = new Layout::Center(m_pDockBase);
-		header_container->SetMouseInputEnabled(true);
-		header_container->SetKeyboardInputEnabled(false);
-		header_container->SetTabable(true);
-		header_container->Dock(Pos::Top);
+		m_NavigationView.Create(m_pDockBase);
 
-		m_pLogoPanel = new ImagePanel(header_container);
-		m_pLogoPanel->SetImage(GetImagePath(LOGO_IMAGE).c_str());
-		m_pLogoPanel->Dock(Pos::Left);
-		m_pLogoPanel->SetWidth(m_pLogoPanel->TextureWidth());
-		m_pLogoPanel->SetHeight(m_pLogoPanel->TextureHeight());
+		m_FooterView.Create(m_pDockBase);
 
-		m_pVersionLabel = new Label(header_container);
-		m_pVersionLabel->SetText(version);
-		m_pVersionLabel->Dock(Pos::Left);
-
-		header_container->SizeToChildren();
-
-		Layout::Center * navigation_container = new Layout::Center(m_pDockBase);
-		navigation_container = new Layout::Center(m_pDockBase);
-		navigation_container->SetMouseInputEnabled(true);
-		navigation_container->SetKeyboardInputEnabled(false);
-		navigation_container->SetTabable(true);
-		navigation_container->Dock(Pos::Top);
-
-		m_pPathLabel = new TextBox(navigation_container);
-		m_pPathLabel->SetText("Main::Page::Path");
-		m_pPathLabel->SetTextColor(Gwen::Colors::Yellow);
-		m_pPathLabel->SetEditable(false);
-		m_pPathLabel->Dock(Pos::Top);
-
-		Layout::Center * buttons_container = new Layout::Center(m_pDockBase);
-		buttons_container->SetHeight(FOOTER_HEIGHT);
-		buttons_container->Dock(Pos::Bottom);
-
-		m_pBackButton = new Button(buttons_container);
-		m_pBackButton->SetText("Back");
-		m_pBackButton->SetImage(GetImagePath(BACK_IMAGE).c_str());
-		m_pBackButton->Dock(Pos::Left);
-		m_pBackButton->onPress.Add(this, &Editor::OnBackPressed);
-
-		m_pExitButton = new Button(buttons_container);
-		m_pExitButton->SetText("Exit");
-		m_pExitButton->SetImage(GetImagePath(EXIT_IMAGE).c_str());
-		m_pExitButton->Dock(Pos::Right);
-		m_pExitButton->onPress.Add(this, &Editor::OnExitPressed);
-
-		navigation_container->SizeToChildren();
+		CreateTreeView(m_pDockBase);
 
 		// create the container of contents
 		m_pPageContainer = new Controls::Layout::Center(m_pDockBase);
 		// and make it to get as much space as it can
 		m_pPageContainer->Dock(Pos::Fill);
 
-		ShowTools(m_pPageContainer);
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	void Editor::ShowTools(Gwen::Controls::Base * pParent)
+	void Editor::CreateTreeView(Controls::DockBase * parent)
 		{
-		// clear the parent
-		pParent->RemoveAllChildren();
-
-		Gwen::Controls::Base * table = new Gwen::Controls::Base(pParent);
-		table->SetMargin(Gwen::Margin(2, 2, 2, 2));
-
-		// add elements
-		Button * prev_button = nullptr;
-		for (Tool::Ptr tool : Editor::Instance().GetTools())
-			{
-			std::string name = tool->GetName();
-			std::string image_path = tool->GetIconRelativePath();
-
-			Button * button = new Button(table);
-			button->SetSize(300, 40);
-
-			int y = (prev_button) ? (prev_button->Bottom()) : 0;
-			prev_button = button;
-
-			button->SetPos(0, y);
-			button->SetText(name);
-
-			if (image_path.empty() == false)
-				button->SetImage(image_path, false);
-
-			button->onPress.Add(this, &Editor::OnToolSelected, tool.get());
-			}
-
-		table->SizeToChildren();
+		m_pProjectFileView = new ProjectFileView(parent, "Project View");
+		parent->GetLeft()->GetTabControl()->AddPage("Project View", m_pProjectFileView);
+		m_pProjectFileView->UpdateContents();
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	void Editor::OnToolSelected(Gwen::Event::Info info)
-		{
-		Tool * pTool = (Tool *)info.Data;
-		if (pTool)
-			ShowTool(pTool->GetTarget());
-		}
-
-	//////////////////////////////////////////////////////////////////////////
-	void Editor::ShowTool(std::string target)
+	void Editor::ShowTool(Tool::Ptr tool)
 		{
 		// remove the page
 		m_pPageContainer->RemoveAllChildren();
@@ -526,8 +316,6 @@ namespace orxIGTools
 		m_pCanvas->InvalidateChildren();
 		orxDisplay_ClearBitmap(orxDisplay_GetScreenBitmap(), orxRGBA_Set(0, 0, 0, 0));
 
-
-		Tool::Ptr tool = GetToolByTarget(target);
 		if (tool)
 			{
 			// create next page
@@ -543,14 +331,12 @@ namespace orxIGTools
 			// notify we're entering
 			next_page->OnPageEnter();
 			}
-		else
-			ShowTools(m_pPageContainer);
 		}
 
 	//////////////////////////////////////////////////////////////////////////
 	void Editor::OnBackPressed(Gwen::Event::Info info)
 		{
-		ShowTool("");
+		ShowTool(nullptr);
 		}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -588,7 +374,7 @@ namespace orxIGTools
 				ss << "::";
 			}
 
-		m_pPathLabel->SetText(ss.str().c_str());
+		m_NavigationView.SetPath(ss.str());
 		}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -598,6 +384,38 @@ namespace orxIGTools
 		path /= image_filename;
 		return path.string();
 		}
+
+	//////////////////////////////////////////////////////////////////////////
+	bool Editor::RegisterFileExtension(FileExtension extension)
+		{
+		bool ret(false);
+
+		if (!GetFileExtension(extension.m_Extension, nullptr))
+			{
+			m_FileExtensions.push_back(extension);
+			ret = true;
+			}
+
+		return ret;
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	bool Editor::GetFileExtension(std::string extension, FileExtension * foud_extension)
+		{
+		bool ret(false);
+
+		auto it = std::find_if(m_FileExtensions.begin(), m_FileExtensions.end(), [&](FileExtension & fe) { return (::case_ins_compare(fe.m_Extension, extension)); });
+		if (it != m_FileExtensions.end())
+			{
+			ret = true;
+			if (foud_extension)
+				*foud_extension = *it;
+			}
+
+		return ret;
+		}
+
+
 
 
 	}

@@ -4,6 +4,11 @@
 #include "Tool.h"
 #include "EditorPage.h"
 #include "ViewportControl.h"
+#include <Gwen/Controls/Properties.h>
+#include <Gwen/Controls/PropertyTree.h>
+#include <Gwen/Controls/Property/ColorSelector.h>
+#include <Gwen/Controls/Property/Checkbox.h>
+#include <Gwen/Controls/Property/ComboBox.h>
 
 namespace orxIGTools
 	{
@@ -25,9 +30,12 @@ namespace orxIGTools
 			void OnCommand() override;
 			
 		protected:
-			Gwen::Controls::TextBox	*			m_pNameTextBox;
+			Gwen::Controls::GroupBox *			m_pGroupBox;
+			Gwen::Controls::PropertyTree *		m_PropertyGrid;
 
 			
+/*
+			Gwen::Controls::TextBox	*			m_pNameTextBox;
 			Gwen::Controls::Layout::Center *	m_pParentInfoContainer;
 			Gwen::Controls::TextBox	*			m_pParentNameTextBox;
 			Gwen::Controls::Button *			m_pBtnBrowseParent;
@@ -36,10 +44,10 @@ namespace orxIGTools
 			Gwen::Controls::TextBox	*			m_pTextureNameTextBox;
 			Gwen::Controls::Button *			m_pBtnBrowseTexture;
 
-			Gwen::Controls::GroupBox *			m_pGroupBox;
 			Gwen::Controls::Button *			m_pBtnAdd;
 			Gwen::Controls::Button *			m_pBtnEdit;
 			Gwen::Controls::Button *			m_pBtnDelete;
+*/
 
 			orxIGTools::ViewportControl *		m_pViewportControl;
 
@@ -49,6 +57,7 @@ namespace orxIGTools
 
 
 		protected:
+			void onPropertyChanged(Controls::Base* pControl);
 			void LoadSection();
 
 

@@ -1,3 +1,4 @@
+#include "orxIGToolsPCH.h"
 #include "StringUtility.h"
 #include <sstream>
 #include <iomanip>

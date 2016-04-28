@@ -16,9 +16,6 @@
     <ClCompile Include="..\..\src\OrxIniFile.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\IniTool.cpp">
-      <Filter>Tools</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\EditorPage.cpp" />
     <ClCompile Include="..\..\src\Logger.cpp">
       <Filter>Utility</Filter>
@@ -26,11 +23,21 @@
     <ClCompile Include="..\..\src\GraphicsTool.cpp">
       <Filter>Tools</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\SectionTypeSelectionDialog.cpp">
-      <Filter>Controls</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ViewportControl.cpp">
       <Filter>Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\orxIGToolsPCH.cpp" />
+    <ClCompile Include="..\..\src\ProjectFilesView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\FooterView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\HeaderView.cpp">
+      <Filter>Views</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\NavigationView.cpp">
+      <Filter>Views</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -52,9 +59,6 @@
     <ClInclude Include="..\..\src\Types.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\IniTool.h">
-      <Filter>Tools</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\EditorPage.h" />
     <ClInclude Include="..\..\src\Logger.h">
       <Filter>Utility</Filter>
@@ -62,11 +66,26 @@
     <ClInclude Include="..\..\src\GraphicsTool.h">
       <Filter>Tools</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\SectionTypeSelectionDialog.h">
-      <Filter>Controls</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\ViewportControl.h">
       <Filter>Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\orxIGToolsPCH.h" />
+    <ClInclude Include="..\..\src\PropertySlider.h">
+      <Filter>Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ProjectFilesView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Extensions.h" />
+    <ClInclude Include="..\..\src\Images.h" />
+    <ClInclude Include="..\..\src\HeaderView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\NavigationView.h">
+      <Filter>Views</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\FooterView.h">
+      <Filter>Views</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -81,6 +100,9 @@
     </Filter>
     <Filter Include="Controls">
       <UniqueIdentifier>{963fb32c-fd4d-44a2-bddb-8a9d8a50d556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Views">
+      <UniqueIdentifier>{e75bf2d8-b181-45a1-807b-ecdbf12e77e3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

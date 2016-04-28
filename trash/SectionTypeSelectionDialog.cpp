@@ -1,3 +1,4 @@
+#include "orxIGToolsPCH.h"
 #include "SectionTypeSelectionDialog.h"
 #include "Editor.h"
 

@@ -1,3 +1,4 @@
+#include "orxIGToolsPCH.h"
 #include "EditorPage.h"
 
 namespace orxIGTools
@@ -38,12 +39,12 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	void EditorPage::SetEditSection(Section::Ptr section)
+	void EditorPage::SetEditSection(Section * section)
 		{
 		m_Section = section;
 		}
 
-	Section::Ptr EditorPage::GetEditSection()
+	Section * EditorPage::GetEditSection()
 		{
 		return m_Section;
 		}

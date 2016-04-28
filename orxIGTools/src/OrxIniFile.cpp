@@ -1,5 +1,4 @@
-m_Name
-m_Name
+#include "orxIGToolsPCH.h"
 #include "OrxIniFile.h"
 #include "Logger.h"
 #include <sstream>
@@ -139,7 +138,7 @@ namespace orxIGTools
 
 
 	//////////////////////////////////////////////////////////////////////////
-	Key::Key(SectionPtr section) : Record(RecordType::Key),
+	Key::Key(Section * section) : Record(RecordType::Key),
 		m_Section(section)
 		{
 		}
@@ -147,6 +146,13 @@ namespace orxIGTools
 	//////////////////////////////////////////////////////////////////////////
 	Key::~Key()
 		{
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	void Key::SetName(std::string name) 
+		{ 
+		m_Name = name; 
+		GetIniFile()->SetDirty(true); 
 		}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -179,6 +185,18 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
+	OrxIniContainer * Key::GetContainer()
+		{ 
+		return m_Section->GetContainer(); 
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	OrxIniFile * Key::GetIniFile()
+		{ 
+		return m_Section->GetIniFile(); 
+		}
+
+	//////////////////////////////////////////////////////////////////////////
 	string Key::value_to_string()
 		{
 #ifdef KEY_USE_MULTIVALUE
@@ -198,12 +216,12 @@ namespace orxIGTools
 		if (m_IsLink)
 			{
 			stringstream ss;
-			ss << INHERITANCE_CHAR << m_LinkSection->m_Name << "." << m_LinkKey->m_Name;
+			ss << INHERITANCE_CHAR << m_LinkSection << "." << m_LinkKey;
 			return ss.str();
 			}
 		else if (m_UseSectionNameAsValue)
 			{
-			return m_Section->m_Name;
+			return m_Section->GetName();
 			}
 		else
 			return m_Value;
@@ -232,7 +250,7 @@ namespace orxIGTools
 		// case 1: it starts with '@'
 		if (val_string[0] == INHERITANCE_CHAR)
 			{
-			OrxIniContainer * container = m_Section->m_IniFile->GetContainer();
+			OrxIniContainer * container = m_Section->GetIniFile()->GetContainer();
 
 			// remove '@'
 			val_string.erase(val_string.begin());
@@ -242,7 +260,7 @@ namespace orxIGTools
 				// case 2 : MyKey = @ it means we use section name as value
 				m_UseSectionNameAsValue = true;
 				m_Value = "";
-				m_LinkSection = nullptr
+				m_LinkSection = nullptr;
 				m_LinkKey = nullptr;
 				}
 
@@ -252,18 +270,16 @@ namespace orxIGTools
 				// case 4: @OtherSection
 				m_IsLink = true;
 				m_Value = "";
-				m_LinkSection = container->GetSection(m_Section, val_string);
-				if (m_LinkSection)
-					m_LinkKey = m_LinkSection->GetKey(m_Name);
+				m_LinkSection = val_string;
+				m_LinkKey = m_Name;
 				}
 			else
 				{
 				// case 4: @OtherSection.KeyName
 				m_IsLink = true;
 				m_Value = "";
-				m_LinkSection = container->GetSection(m_Section, val_string.substr(0, point_pos));
-				if (m_LinkSection)
-					m_LinkKey = m_LinkSection->GetKey(val_string.substr(point_pos + 1));
+				m_LinkSection = val_string.substr(0, point_pos);
+				m_LinkKey = val_string.substr(point_pos + 1);
 				}
 
 			}
@@ -274,64 +290,81 @@ namespace orxIGTools
 	//////////////////////////////////////////////////////////////////////////
 	void Key::SetValue(std::string value)
 		{
-		m_Value = value;
+		if ((value != m_Value) || IsLink())
+			{
+			m_Value = value;
 
-		m_IsLink = false;
-		m_UseSectionNameAsValue = false;
+			m_IsLink = false;
+			m_UseSectionNameAsValue = false;
 
-		m_LinkSection = nullptr;
-		m_LinkKey = nullptr;
+			m_LinkSection = nullptr;
+			m_LinkKey = nullptr;
+
+			GetIniFile()->SetDirty(true);
+			}
 		}
 
 	//////////////////////////////////////////////////////////////////////////
 	void Key::SetLink(std::string section, std::string key)
 		{
-		m_IsLink = true;
-		m_UseSectionNameAsValue = false;
+		if (!IsLink() || 
+			(IsLink() && 
+				((section != m_LinkSection) || (m_LinkKey != m_LinkKey))))
+			{
+			m_IsLink = true;
+			m_UseSectionNameAsValue = false;
+			m_LinkSection = section;
+			m_LinkKey = key;
 
-		OrxIniContainer * container = GetContainer();
-		m_LinkSection = container->GetSection(GetIniFile(), section);
-	
-		if ((m_LinkSection) && (!key.empty()))
-			m_LinkKey = m_LinkSection->GetKey(key);
+			GetIniFile()->SetDirty(true);
+			}
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	void Key::SetLink(Key::Ptr key)
+	void Key::SetLink(Key * key)
 		{
 		m_IsLink = true;
 		m_UseSectionNameAsValue = false;
-
-		m_LinkSection = key->m_Section;
-		m_LinkKey = key;
+		SetLink(key->m_Section->GetName(), key->GetName());
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	void Key::SetLink(Section::Ptr section)
+	void Key::SetLink(Section * section)
 		{
 		m_IsLink = true;
 		m_UseSectionNameAsValue = false;
-
-		m_LinkSection = section;
-		m_LinkKey = nullptr;
+		SetLink(section->GetName(), m_Name);
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	std::string Key::GetValue()
+	std::string Key::GetValue(string default_value)
 		{
 		std::string ret;
 
-		if ((m_IsLink) && (m_LinkSection))
+		if (m_IsLink)
 			{
-			if (m_LinkKey != nullptr)
-				ret = m_LinkKey->GetValue();
+			Section * linked_section = GetLinkedSection();
+			if (linked_section != nullptr)
+				ret = linked_section->GetKeyValue(m_Name, default_value);
 			else
-				ret = m_LinkSection->GetKeyValue(m_Name);
+				ret = default_value;
 			}
 		else if (m_UseSectionNameAsValue)
-			ret = m_Section->m_Name;
+			ret = m_Section->GetName();
 		else
-			ret = m_Value
+			ret = m_Value;
+
+		return ret;
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	Section * Key::GetLinkedSection()
+		{
+		Section * ret(nullptr);
+
+		OrxIniContainer * container = GetContainer();
+		if (container)
+			ret = container->GetSection(GetIniFile(), m_LinkSection);
 
 		return ret;
 		}
@@ -343,9 +376,8 @@ namespace orxIGTools
 
 
 
-
 	//////////////////////////////////////////////////////////////////////////
-	Section::Section(OrxIniFilePtr ini_file) : Record(RecordType::Section),
+	Section::Section(OrxIniFile * ini_file) : Record(RecordType::Section),
 		m_IniFile(ini_file)
 		{
 		}
@@ -353,6 +385,23 @@ namespace orxIGTools
 	//////////////////////////////////////////////////////////////////////////
 	Section::~Section()
 		{
+		for (Key * pk : m_Keys)
+			delete pk;
+		m_Keys.clear();
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	void Section::SetName(std::string name)
+		{
+		m_Name = name;
+		GetIniFile()->SetDirty(true);
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	void Section::SetBase(string base)
+		{
+		m_BaseName = base;
+		GetIniFile()->SetDirty(true);
 		}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -375,57 +424,110 @@ namespace orxIGTools
 		split.m_Line.erase(split.m_Line.begin());
 		split.m_Line.erase(--split.m_Line.end());
 
-		Strings name_strs = ::split(split.m_Line, std::string(INHERITANCE_CHAR));
+		StringVector name_strs = ::split(split.m_Line, std::string(1, INHERITANCE_CHAR));
 		m_Name = name_strs[0];
 
-		if (name_strs.size() > 0)
-			m_Base = GetContainer()->GetSection(GetIniFile(), name_strs[1]);
+		if (name_strs.size() > 1)
+			m_BaseName = name_strs[1];
 
 		m_Comments = split.m_Comment;
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	Key::Ptr Section::AddKey(string KeyName, string Value)
+	OrxIniContainer * Section::GetContainer() 
+		{ 
+		return m_IniFile->GetContainer(); 
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	Section * Section::GetBaseSection()
 		{
-		Key::Ptr key = GetKey(KeyName);
+		Section * ret(nullptr);
+
+		OrxIniContainer * container = GetContainer();
+		if (container)
+			ret = container->GetSection(GetIniFile(), m_BaseName);
+
+		return ret;
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	Key * Section::AddKey(string KeyName, string Value)
+		{
+		Key * key = GetKey(KeyName);
 		if (key != nullptr)
 			return nullptr;
 
-		key = std::make_shared<Key>(this->shared_from_this());
-		key->m_Name = KeyName;
-		key->m_Value = Value;
+		key = new Key(this);
+		key->SetName(KeyName);
+		key->SetValue(Value);
 
 		m_Keys.push_back(key);
+
+		GetIniFile()->SetDirty(true);
+
 		return key;
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	Key::Ptr Section::GetKey(string KeyName)
+	Key * Section::AddKey(Key * key)
 		{
-		Key::Ptr key;
+		auto it = std::find(m_Keys.begin(), m_Keys.end(), key);
+		if (it != m_Keys.end())
+			return nullptr;
 
-		for (Key::Ptr kp : m_Keys)
-			{
-			if (kp->m_Name == KeyName)
-				{
-				key = kp;
-				break;
-				}
-			}
+		m_Keys.push_back(key);
+
+		GetIniFile()->SetDirty(true);
 
 		return key;
 		}
+
+	//////////////////////////////////////////////////////////////////////////
+	Key * Section::GetKey(string KeyName)
+		{
+		Key * key(nullptr);
+
+		auto it = std::find_if(m_Keys.begin(), m_Keys.end(), [&](Key * k) { return (k->GetName() == KeyName); });
+		if (it != m_Keys.end())
+			key = *it;
+
+		return key;
+		}
+
+	//////////////////////////////////////////////////////////////////////////
+	std::string Section::GetKeyValue(string KeyName, string default_value)
+		{
+		std::string ret;
+
+		Key * key = GetKey(KeyName);
+		if (key)
+			ret = key->GetValue();
+		else
+			{
+			Section * base = GetBaseSection();
+			if (base)
+				ret = base->GetKeyValue(KeyName, default_value);
+			else
+				ret = default_value;
+			}
+
+		return ret;
+		}
+
 
 	//////////////////////////////////////////////////////////////////////////
 	bool Section::RenameKey(string OldKeyName, string NewKeyName)
 		{
 		bool ret(false);
 
-		Key::Ptr data = GetKey(OldKeyName);
+		Key * data = GetKey(OldKeyName);
 		if (data)
 			{
-			data->m_Name = NewKeyName;
+			data->SetName(NewKeyName);
 			ret = true;
+
+			GetIniFile()->SetDirty(true);
 			}
 
 		return ret;
@@ -436,14 +538,17 @@ namespace orxIGTools
 		{
 		bool ret(false);
 
-		Key::Ptr key = GetKey(KeyName);
+		Key * key = GetKey(KeyName);
 		if (key)
 			{
 			Keys::iterator it = std::find(m_Keys.begin(), m_Keys.end(), key);
 			if (it != m_Keys.end())
 				{
+				delete (*it);
 				m_Keys.erase(it);
 				ret = true;
+
+				GetIniFile()->SetDirty(true);
 				}
 			}
 
@@ -461,11 +566,13 @@ namespace orxIGTools
 		{
 		bool ret(false);
 
-		Key::Ptr key = GetKey(KeyName);
+		Key * key = GetKey(KeyName);
 		if (key)
 			{
 			key->m_Comments = Comments;
 			ret = true;
+			
+			GetIniFile()->SetDirty(true);
 			}
 
 		return ret;
@@ -484,6 +591,8 @@ namespace orxIGTools
 				m_Keys.sort(AscendingKeySort());
 
 			ret = true;
+			
+			GetIniFile()->SetDirty(true);
 			}
 
 		return ret;
@@ -495,12 +604,14 @@ namespace orxIGTools
 
 
 	//////////////////////////////////////////////////////////////////////////
-	OrxIniFile::OrxIniFile(void)
+	OrxIniFile::OrxIniFile(OrxIniContainer * container) :
+		m_Container(container), m_Dirty(false)
 		{
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	OrxIniFile::OrxIniFile(string Filename)
+	OrxIniFile::OrxIniFile(OrxIniContainer * container, string Filename) :
+		m_Container(container), m_Dirty(false)
 		{
 		Load(Filename);
 		}
@@ -508,6 +619,9 @@ namespace orxIGTools
 	//////////////////////////////////////////////////////////////////////////
 	OrxIniFile::~OrxIniFile(void)
 		{
+		for (Record * pr : m_Records)
+			delete pr;
+		m_Records.clear();
 		}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -521,48 +635,58 @@ namespace orxIGTools
 		m_Filename = FileName;
 		m_Records.clear();
 
-		Section::Ptr CurrentSection;
+		Record * record = nullptr;
 		string line;
 		while (!std::getline(inFile, line).eof())
 			{
 			trim(line);
+			bool add_to_records(false);
 			if (line.empty() == false)
 				{
-				Record::Ptr record = nullptr;
+				if (!line.empty())
+					{
+					if (IsIncludeLine(line))
+						{
+						record = new Include();
+						add_to_records = true;
+						}
+					else if (IsSectionLine(line))
+						{
+						record = new Section(this);
+						add_to_records = true;
+						}
+					else if (IsKeyLine(line))
+						{
+						if (record != nullptr && record->m_Type == RecordType::Section)
+							{
+							Section * section = static_cast<Section *>(record);
+							Key * key = new Key(section);
+							key->from_string(line);
+							section->AddKey(key);
+							add_to_records = false;
+							}
+						}
+					else
+						{
+						if (!IsCommentLine(line))
+							// unknown!!!
+							break;
+						}
 
-				if (line.empty())
-					record = make_shared<Record>();
-				else if (IsCommentLine(line))
-					record = make_shared<Comment>();
-				else if (IsIncludeLine(line))
-					record = make_shared<Include>();
-				else if (IsSectionLine(line))
-					{
-					CurrentSection = make_shared<Section>(this->shared_from_this());
-					record = CurrentSection;
-					}
-				else if (IsKeyLine(line))
-					{
-					Key::Ptr key = make_shared<Key>(CurrentSection);
-					key->from_string(line);
-					CurrentSection->m_Keys.push_back(key);
-					}
-				else
-					{
-					// unknown!!!
-					break;
-					}
-
-				if (record != nullptr)
-					{
-					record->from_string(line);
-					m_Records.push_back(record);
-					record = nullptr;
+					if (add_to_records)
+						{
+						record->from_string(line);
+						m_Records.push_back(record);
+						add_to_records = false;
+						}
 					}
 				}
 			}
 
 		inFile.close();
+
+		SetDirty(false);
+
 		return true;
 		}
 
@@ -574,10 +698,12 @@ namespace orxIGTools
 		if (!outFile.is_open())
 			return false;
 
-		for (Record::Ptr record : m_Records)
+		for (Record * record : m_Records)
 			outFile << record->to_string() << std::endl;
 
 		outFile.close();
+
+		SetDirty(false);
 
 		return true;
 		}
@@ -593,12 +719,12 @@ namespace orxIGTools
 		{
 		vector<string> data;
 
-		for (Record::Ptr record : m_Records)
+		for (Record * record : m_Records)
 			{
 			if (record->m_Type == RecordType::Section)
 				{
-				Section::Ptr section = dynamic_pointer_cast<Section>(record);
-				data.push_back(section->m_Name);
+				Section * section = static_cast<Section *>(record);
+				data.push_back(section->GetName());
 				}
 			}
 
@@ -610,11 +736,11 @@ namespace orxIGTools
 		{
 		Includes data;
 
-		for (Record::Ptr record : m_Records)
+		for (Record * record : m_Records)
 			{
 			if (record->m_Type == RecordType::Include)
 				{
-				Include::Ptr include = dynamic_pointer_cast<Include>(record);
+				Include * include = static_cast<Include *>(record);
 				data.push_back(include);
 				}
 			}
@@ -627,11 +753,11 @@ namespace orxIGTools
 		{
 		Sections data;
 
-		for (Record::Ptr record : m_Records)
+		for (Record * record : m_Records)
 			{
 			if (record->m_Type == RecordType::Section)
 				{
-				Section::Ptr section = dynamic_pointer_cast<Section>(record);
+				Section * section = static_cast<Section *>(record);
 				data.push_back(section);
 				}
 			}
@@ -640,13 +766,13 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	Section::Ptr OrxIniFile::AddSection(string SectionName)
+	Section * OrxIniFile::AddSection(string SectionName)
 		{
-		Section::Ptr section = GetSection(SectionName);
+		Section * section = GetSection(SectionName);
 		if (section == nullptr)
 			{
-			section = std::make_shared<Section>(this->shared_from_this());
-			section->m_Name = SectionName;
+			section = new Section(this);
+			section->SetName(SectionName);
 			m_Records.push_back(section);
 			}
 		else
@@ -656,12 +782,12 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	Section::Ptr OrxIniFile::AddSection(Section::Ptr new_section)
+	Section * OrxIniFile::AddSection(Section * new_section)
 		{
-		Section::Ptr section = GetSection(section->m_Name);
+		Section * section = GetSection(new_section->GetName());
 		if (section == nullptr)
 			{
-			new_section->m_IniFile = this->shared_from_this();
+			new_section->SetIniFile(this);
 			m_Records.push_back(new_section);
 			section = new_section;
 			}
@@ -672,16 +798,16 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	Section::Ptr OrxIniFile::GetSection(string SectionName)
+	Section * OrxIniFile::GetSection(string SectionName)
 		{
-		Section::Ptr data;
+		Section * data(nullptr);
 
-		for (Record::Ptr record : m_Records)
+		for (Record * record : m_Records)
 			{
 			if (record->m_Type == RecordType::Section)
 				{
-				Section::Ptr section = dynamic_pointer_cast<Section>(record);
-				if (section->m_Name == SectionName)
+				Section * section = static_cast<Section *>(record);
+				if (section->GetName() == SectionName)
 					{
 					data = section;
 					break;
@@ -697,11 +823,13 @@ namespace orxIGTools
 		{
 		bool ret(false);
 
-		Section::Ptr section = GetSection(OldSectionName);
+		Section * section = GetSection(OldSectionName);
 		if (section)
 			{
-			section->m_Name = NewSectionName;
+			section->SetName(NewSectionName);
 			ret = true;
+
+			SetDirty(true);
 			}
 
 		return ret;															// In the event the file does not load
@@ -712,15 +840,16 @@ namespace orxIGTools
 		{
 		bool ret(false);
 
-		Section::Ptr section = GetSection(SectionName);
+		Section * section = GetSection(SectionName);
 		if (section)
 			{
-			Record::Ptr record = dynamic_pointer_cast<Record>(section);
+			Record * record = static_cast<Record *>(section);
 			Records::iterator it = std::find(m_Records.begin(), m_Records.end(), record);
 			if (it != m_Records.end())
 				{
 				m_Records.erase(it);
 				ret = true;
+				SetDirty(true);
 				}
 			}
 
@@ -732,11 +861,12 @@ namespace orxIGTools
 		{
 		bool ret(false);
 
-		Section::Ptr section = GetSection(SectionName);
+		Section * section = GetSection(SectionName);
 		if (section)
 			{
 			section->m_Comments = Comments;
 			ret = true;
+			SetDirty(true);
 			}
 
 		return ret;
@@ -749,11 +879,11 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	Key::Ptr OrxIniFile::AddKey(string SectionName, string KeyName, string Value)
+	Key * OrxIniFile::AddKey(string SectionName, string KeyName, string Value)
 		{
-		Key::Ptr data;
+		Key * data(nullptr);
 
-		Section::Ptr section = GetSection(SectionName);
+		Section * section = GetSection(SectionName);
 		if (section)
 			data = section->AddKey(KeyName, Value);
 
@@ -761,11 +891,11 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	Key::Ptr OrxIniFile::GetKey(string SectionName, string KeyName)
+	Key * OrxIniFile::GetKey(string SectionName, string KeyName)
 		{
-		Key::Ptr data;
+		Key * data(nullptr);
 
-		Section::Ptr section = GetSection(SectionName);
+		Section * section = GetSection(SectionName);
 		if (section)
 			data = section->GetKey(KeyName);
 
@@ -777,7 +907,7 @@ namespace orxIGTools
 		{
 		bool ret(false);
 
-		Section::Ptr section = GetSection(SectionName);
+		Section * section = GetSection(SectionName);
 		if (section)
 			ret = section->RenameKey(OldKeyName, NewKeyName);
 
@@ -789,7 +919,7 @@ namespace orxIGTools
 		{
 		bool ret(false);
 
-		Section::Ptr section = GetSection(SectionName);
+		Section * section = GetSection(SectionName);
 		if (section)
 			ret = section->DeleteKey(KeyName);
 
@@ -801,7 +931,7 @@ namespace orxIGTools
 		{
 		bool ret(false);
 
-		Section::Ptr section = GetSection(SectionName);
+		Section * section = GetSection(SectionName);
 		if (section)
 			ret = section->SetKeyComments(KeyName, Comments);
 
@@ -813,7 +943,7 @@ namespace orxIGTools
 		{
 		bool ret(false);
 
-		Section::Ptr section = GetSection(SectionName);
+		Section * section = GetSection(SectionName);
 		if (section)
 			ret = section->KeyExists(KeyName);
 
@@ -821,16 +951,16 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	string OrxIniFile::GetValue(string SectionName, string KeyName)
+	string OrxIniFile::GetValue(string SectionName, string KeyName, string default_value)
 		{
 		string data;
 
-		Section::Ptr section = GetSection(SectionName);
+		Section * section = GetSection(SectionName);
 		if (section)
 			{
-			Key::Ptr key = section->GetKey(KeyName);
+			Key * key = section->GetKey(KeyName);
 			if (key)
-				data = key->m_Value;
+				data = key->GetValue(default_value);
 			}
 
 		return data;
@@ -841,21 +971,21 @@ namespace orxIGTools
 		{
 		bool ret(false);
 
-		Section::Ptr section = GetSection(SectionName);
+		Section * section = GetSection(SectionName);
 
 		if (section == nullptr)
 			section = AddSection(SectionName);
 
 		if (section)
 			{
-			Key::Ptr key = section->GetKey(KeyName);
+			Key * key = section->GetKey(KeyName);
 
 			if (key == nullptr)
-				section->AddKey(KeyName);
+				key = section->AddKey(KeyName);
 
 			if (key)
 				{
-				key->m_Value = Value;
+				key->SetValue(Value);
 				ret = true;
 				}
 			}
@@ -890,7 +1020,7 @@ namespace orxIGTools
 			ret = true;
 
 			Sections sections = GetSections();
-			for (Section::Ptr section : sections)
+			for (Section * section : sections)
 				ret = ret && section->Sort(Descending);
 			}
 
@@ -934,6 +1064,9 @@ namespace orxIGTools
 	//////////////////////////////////////////////////////////////////////////
 	OrxIniContainer::~OrxIniContainer()
 		{
+		for (OrxIniFile * pf : m_Files)
+			delete pf;
+		m_Files.clear();
 		}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -980,7 +1113,7 @@ namespace orxIGTools
 	//////////////////////////////////////////////////////////////////////////
 	bool OrxIniContainer::FileLoaded(OrxIniFiles & files, std::string filename)
 		{
-		for (OrxIniFile::Ptr file : files)
+		for (OrxIniFile * file : files)
 			{
 			if (file->GetFileName() == filename)
 				return true;
@@ -990,31 +1123,45 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	void OrxIniContainer::LoadFile(std::string filename)
+	OrxIniFile * OrxIniContainer::LoadFile(std::string filename)
 		{
+		OrxIniFile * ret = GetFile(filename);
+
 		// don't load aready loaded files
-		if (!FileLoaded(filename))
+		if (!ret)
 			{
 			boost::filesystem::path current_path(filename);
 			TRACE_NFO("+ ini : %s", current_path.string().c_str());
 
-			OrxIniFile::Ptr file = make_shared<OrxIniFile>(this);
-			file->Load(current_path.string());
-			m_Files.push_back(file);
-
-			Includes includes = file->GetIncludes();
-			for (Include::Ptr include : includes)
+			OrxIniFile * file = new OrxIniFile(this);
+			if (file->Load(current_path.string()))
 				{
-				// build a complete filename
-				current_path = current_path.parent_path() / include->m_FileName;
-				// try to load the file (if already loaded it will not load)
-				LoadFile(current_path.string());
+				m_Files.push_back(file);
+
+				Includes includes = file->GetIncludes();
+				for (Include * include : includes)
+					{
+					// build a complete filename
+					current_path = current_path.parent_path() / include->m_FileName;
+					// try to load the file (if already loaded it will not load)
+					LoadFile(current_path.string());
+					}
+				ret = file;
+				}
+			else
+				{
+				TRACE_NFO("+ ini failed to load file!!!");
+				delete file;
 				}
 			}
+		else
+			TRACE_NFO("+ ini file already loaded!");
+
+		return ret;
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	Section::Ptr OrxIniContainer::GetSection(OrxIniFile::Ptr requestor, std::string section_name)
+	Section * OrxIniContainer::GetSection(OrxIniFile * requestor, std::string section_name)
 		{
 		// get all files that the requesto can see
 		OrxIniFiles visible_files;
@@ -1027,11 +1174,11 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	Section::Ptr OrxIniContainer::GetSection(Sections & sections, std::string section_name)
+	Section * OrxIniContainer::GetSection(Sections & sections, std::string section_name)
 		{
-		Section::Ptr ret(nullptr);
+		Section * ret(nullptr);
 
-		Sections::iterator it = std::find_if(sections.begin(), sections.end(), [&](Section::Ptr section) { return (section->m_Name == section_name); });
+		Sections::iterator it = std::find_if(sections.begin(), sections.end(), [&](Section * section) { return (section->GetName() == section_name); });
 		if (it != sections.end())
 			ret = *it;
 		
@@ -1039,10 +1186,10 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	void OrxIniContainer::GetVisibleFiles(OrxIniFile::Ptr source, OrxIniFiles & files)
+	void OrxIniContainer::GetVisibleFiles(OrxIniFile * source, OrxIniFiles & files)
 		{
 		Includes includes = source->GetIncludes();
-		for (Include::Ptr include : includes)
+		for (Include * include : includes)
 			{
 			// build a complete filename
 			boost::filesystem::path current_path = source->GetFileName();
@@ -1052,7 +1199,7 @@ namespace orxIGTools
 			if (!FileLoaded(files, current_path.string()))
 				{
 				// ok, get the file loaded by the container
-				OrxIniFile::Ptr included_file = GetFile(current_path.string());
+				OrxIniFile * included_file = GetFile(current_path.string());
 				// add to the list
 				files.push_back(included_file);
 				// and get all file the included one can see
@@ -1062,9 +1209,9 @@ namespace orxIGTools
 		}
 
 	//////////////////////////////////////////////////////////////////////////
-	OrxIniFile::Ptr OrxIniContainer::GetFile(std::string filename)
+	OrxIniFile * OrxIniContainer::GetFile(std::string filename)
 		{
-		for (OrxIniFile::Ptr file : m_Files)
+		for (OrxIniFile * file : m_Files)
 			{
 			if (file->GetFileName() == filename)
 				return file;
@@ -1076,7 +1223,7 @@ namespace orxIGTools
 	//////////////////////////////////////////////////////////////////////////
 	void OrxIniContainer::GetSections(Sections & sections, OrxIniFiles & files)
 		{
-		for (OrxIniFile::Ptr file : files)
+		for (OrxIniFile * file : files)
 			{
 			Sections file_sections = file->GetSections();
 			sections.insert(sections.end(), file_sections.begin(), file_sections.end());

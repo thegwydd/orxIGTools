@@ -6,6 +6,17 @@
 #include "orxIGToolsTestApplication.h"
 #undef __SCROLL_IMPL__
 
+#ifdef _DEBUG
+	#ifndef DBG_NEW
+		#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+		#define new DBG_NEW
+	#endif
+#endif  // _DEBUG
+
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
 #include "Gwen/Align.h"
 #include "Gwen/Utility.h"
 #include "Gwen/Controls/Layout/Position.h"
@@ -30,6 +41,8 @@ int main(int argc, char **argv)
 //Here's an example for a console-less program under windows with visual studio
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 	{
+//	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 	/* Inits and executes orx */
 	orxIGToolsTestApplication::GetInstance().Execute();
 

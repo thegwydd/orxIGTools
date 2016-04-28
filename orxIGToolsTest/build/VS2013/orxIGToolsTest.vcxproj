@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,13 +19,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
@@ -58,7 +58,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;__orxDEBUG__ ;__orxMSVC__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -66,9 +66,11 @@
       <AdditionalDependencies>orxd.lib;gwen_staticd.lib;orxIGTools.lib;orxGwen.lib;opengl32.lib;%(AdditionalDependencies);</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ORX_PATH)\code\lib\dynamic\*.dll $(TargetDir)
-copy $(ProjectDir)\..\..\data\*.* $(TargetDir)
-copy $(ProjectDir)\..\..\..\orxIGTools\data\*.* $(TargetDir)</Command>
+      <Command>xcopy /y /i $(ORX_PATH)\code\lib\dynamic\*.dll $(TargetDir)
+xcopy /y /i $(ProjectDir)\..\..\data\*.* $(TargetDir)
+xcopy /y /i $(ProjectDir)\..\..\..\orxIGTools\data\*.* $(TargetDir).orxIGTools\
+xcopy /y /i $(ProjectDir)\..\..\..\orxIGTools\data\images\*.* $(TargetDir).orxIGTools\images\
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -80,7 +82,7 @@ copy $(ProjectDir)\..\..\..\orxIGTools\data\*.* $(TargetDir)</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;__orxMSVC__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -90,9 +92,11 @@ copy $(ProjectDir)\..\..\..\orxIGTools\data\*.* $(TargetDir)</Command>
       <AdditionalDependencies>orx.lib;gwen_static.lib;orxIGTools.lib;orxGwen.lib;opengl32.lib;%(AdditionalDependencies);</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ORX_PATH)\code\lib\dynamic\*.dll $(TargetDir)
-copy $(ProjectDir)\..\..\data\*.* $(TargetDir)
-copy $(ProjectDir)\..\..\..\orxIGTools\data\*.* $(TargetDir)</Command>
+      <Command>xcopy /y /i $(ORX_PATH)\code\lib\dynamic\*.dll $(TargetDir)
+xcopy /y /i $(ProjectDir)\..\..\data\*.* $(TargetDir)
+xcopy /y /i $(ProjectDir)\..\..\..\orxIGTools\data\*.* $(TargetDir).orxIGTools\
+xcopy /y /i $(ProjectDir)\..\..\..\orxIGTools\data\images\*.* $(TargetDir).orxIGTools\images\
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

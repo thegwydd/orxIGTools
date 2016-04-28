@@ -6,7 +6,6 @@
 #include <fstream>
 #include <algorithm>
 #include <functional>
-#include <memory>
 #include <list>
 #include <map>
 
@@ -17,7 +16,8 @@ using namespace std;
 #define STRING_CHAR					'"'
 #define BEGIN_SECTION_CHAR			'['
 #define END_SECTION_CHAR			']'
-#define ARRAR_VALUE_SEPARATOR_CHAR	'#'
+#define ARRAY_VALUE_SEPARATOR_CHAR	'#'
+#define RANDOM_MARKER				"..." 
 
 //#define KEY_USE_MULTIVALUE
 
@@ -46,12 +46,9 @@ namespace orxIGTools
 
 	//////////////////////////////////////////////////////////////////////////
 	//! Base record class. Usually each line of an INI file corresponds to a record.
+	//! NOT YET IMPLEMENTED OT USED
 	class Record
 		{
-		public:
-			//! Shared ptr to a record
-			typedef std::shared_ptr<Record> Ptr;
-
 		public:
 			Record(RecordType type = RecordType::Empty);
 			virtual ~Record();
@@ -70,15 +67,30 @@ namespace orxIGTools
 			string			m_Comments;
 		};
 
-	typedef std::list<Record::Ptr> Records;
+	typedef std::list<Record *> Records;
+
+	//////////////////////////////////////////////////////////////////////////
+	//! A comment record: ex ; this is a comment
+	//! NOT YET IMPLEMENTED OT USED
+	class Comment : public Record
+		{
+		public:
+			Comment();
+			~Comment();
+
+		public:
+			//! converts the Record to a string (for saving)
+			virtual string to_string();
+			//! builds the Record from a string (for loading )
+			virtual void from_string(string & line);
+
+			// It's empty 
+		};
 
 	//////////////////////////////////////////////////////////////////////////
 	//! Include directive record: ex @include_this_file.ini
 	class Include : public Record
 		{
-		public:
-			typedef std::shared_ptr<Include> Ptr;
-
 		public:
 			Include();
 			~Include();
@@ -93,41 +105,19 @@ namespace orxIGTools
 			string			m_FileName;
 		};
 
-	typedef std::list<Include::Ptr> Includes;
-
-	//////////////////////////////////////////////////////////////////////////
-	//! A comment record: ex ; this is a comment
-	class Comment : public Record
-		{
-		public:
-			typedef std::shared_ptr<Comment> Ptr;
-
-		public:
-			Comment();
-			~Comment();
-
-		public:
-			//! converts the Record to a string (for saving)
-			virtual string to_string();
-			//! builds the Record from a string (for loading )
-			virtual void from_string(string & line);
-
-			// It's empty 
-		};
+	typedef std::list<Include *> Includes;
 
 	//! Forward declaration of a Section class (to use in Key)
 	class Section;
+	class OrxIniContainer;
+	class OrxIniFile;
 
 	//////////////////////////////////////////////////////////////////////////
 	//! A Key/Value record: ex MyKey = MyValue1 # MyValue2 # MyValue3
 	class Key : public Record
 		{
 		public:
-			typedef std::shared_ptr<Key> Ptr;
-			typedef std::shared_ptr<Section> SectionPtr;
-
-		public:
-			Key(SectionPtr section);
+			Key(Section * section);
 			~Key();
 
 		public:
@@ -135,26 +125,24 @@ namespace orxIGTools
 			virtual string to_string();
 			//! builds the Record from a string (for loading )
 			virtual void from_string(string & line);
-
-		public:
 			//! Returns a pointer to the OrxIniContainer
-			OrxIniContainer * GetContainer() { return m_Section->GetContainer(); }
+			OrxIniContainer * GetContainer();
 			//! Returns a pointer to the OrxIniContainer
-			OrxIniFile::Ptr * GetIniFile() { return m_Section->GetIniFile(); }
+			OrxIniFile * GetIniFile();
 			//! Get key name
 			std::string GetName() { return m_Name; }
 			//! Sets the key name
-			void SetName(std::string name) { m_Name = value; }
+			void SetName(std::string name);
 			//! Sets the value
 			void SetValue(std::string value);
 			//! Sets the value as a link
 			void SetLink(std::string section, std::string key = "");
 			//! Sets the value as a link
-			void SetLink(Key::Ptr key);
+			void SetLink(Key * key);
 			//! Sets the value as a link
-			void SetLink(Section::Ptr section);
+			void SetLink(Section * section);
 			//! Gets the value
-			std::string GetValue();
+			std::string GetValue(string default_value = "");
 			//! Tells if the value inherits from another section
 			bool IsLink() { return m_IsLink; }
 			//! Tells if the value inherits from another section
@@ -164,24 +152,23 @@ namespace orxIGTools
 			bool HasMultipleValues() { return (m_Values.size() > 1); }
 #endif
 
-
 		private:
 			//! returns string containing all values
 			string value_to_string();
 			//! builds values from a string
 			int string_to_value(string val_string);
+			//! resolve the link
+			Section * GetLinkedSection();
 
 		private:
 			//! Name of the key
 			string			m_Name;
 			//! Pointer to owner section
-			SectionPtr		m_Section;
-			//! Value string
-			string			m_Value;
+			Section *		m_Section;
 			//! Name of the linked section (in case it's a link)
-			SectionPtr		m_LinkSection;
+			string			m_LinkSection;
 			//! Name of the linked key (in case it's a link)
-			Key::Ptr		m_LinkKey;
+			string			m_LinkKey;
 			//! Tells if the value is a link to another key
 			bool			m_IsLink;
 			//! Tells if the value is the name of the section
@@ -195,20 +182,16 @@ namespace orxIGTools
 		};
 
 	//! List of keys
-	typedef std::list<Key::Ptr> Keys;
+	typedef std::list<Key *> Keys;
 
 	//! Forward declaration of a OrxIniFile class (to use in Section)
 	class OrxIniFile;
 	//////////////////////////////////////////////////////////////////////////
 	//! Structure of a record
-	class Section : public Record, public std::enable_shared_from_this < Section >
+	class Section : public Record
 		{
 		public:
-			typedef std::shared_ptr<Section>	Ptr;
-			typedef std::shared_ptr<OrxIniFile> OrxIniFilePtr;
-
-		public:
-			Section(OrxIniFilePtr ini_file);
+			Section(OrxIniFile * ini_file);
 			~Section();
 
 		public:
@@ -219,27 +202,29 @@ namespace orxIGTools
 
 		public:
 			//! Returns a pointer to the OrxIniContainer
-			OrxIniContainer * GetContainer() { return m_IniFile->GetContainer(); }
+			OrxIniContainer * GetContainer();
 			//! Returns a pointer to the OrxIniContainer
-			OrxIniFile::Ptr * GetIniFile() { return m_IniFile; }
+			OrxIniFile * GetIniFile() { return m_IniFile; }
+			//! Sets a pointer to the OrxIniContainer
+			void SetIniFile(OrxIniFile * file) { m_IniFile = file; }
 			//! Get key name
 			std::string GetName() { return m_Name; }
 			//! Sets the key name
-			void SetName(std::string name) { m_Name = value; }
+			void SetName(std::string name);
 			//! Tells if it inherits
 			bool Inherits() { return m_Inherits; }
 			//! Returns the base section
-			Section::Ptr GetBase() { return m_Base; }
+			string GetBaseName() { return m_BaseName; }
 			//! Set the base section
-			void SetBase(Section::Ptr base) { m_Base = base; }
+			void SetBase(string base);
+			//! Creates and adds a key
+			Key * AddKey(string KeyName, string Value = "");
+			//! Adds a key
+			Key * AddKey(Key * key);
 			//! Gets a key by name
-			Key::Ptr AddKey(string KeyName, string Value = "");
-			//! Gets a key by name
-			Key::Ptr GetKey(string KeyName);
-			//! Gets a key by name from the section or parents
-			Key::Ptr GetKeyRecursive(string KeyName);
+			Key * GetKey(string KeyName);
 			//! Gets a key value by key name
-			std::string GetKeyValue(string KeyName);
+			std::string GetKeyValue(string KeyName, string default_value);
 			//! Renames a section key
 			bool RenameKey(string OldKeyName, string NewKeyName);
 			//! Deletes a key
@@ -250,43 +235,37 @@ namespace orxIGTools
 			bool SetKeyComments(string KeyName, string Comments);
 			//! sorts keys
 			bool Sort(bool Descending);
+			//! returns a reference to the key array
+			Keys & GetKeys() { return m_Keys; }
 
 		private:
 			string			m_Name;
-			Section::Ptr	m_Base;
+			string 			m_BaseName;
 			bool			m_Inherits;
-			OrxIniFilePtr	m_IniFile;
+			OrxIniFile *	m_IniFile;
 			Keys			m_Keys;
 
 		private:
-			struct AscendingKeySort
-				{
-				bool operator()(Key::Ptr Start, Key::Ptr End)
-					{
-					return Start->m_Name < End->m_Name;
-					}
+			//! resolve the link
+			Section * GetBaseSection();
+
+			struct AscendingKeySort {
+				bool operator()(Key * Start, Key * End) { return Start->GetName() < End->GetName(); }
 				};
 
-			struct DescendingKeySort
-				{
-				bool operator()(Key::Ptr Start, Key::Ptr End)
-					{
-					return Start->m_Name > End->m_Name;
-					}
+			struct DescendingKeySort {
+				bool operator()(Key * Start, Key * End) { return Start->GetName() > End->GetName(); }
 				};
 
 		};
 
-	typedef std::list<Section::Ptr> Sections;
+	typedef std::list<Section *> Sections;
 
 	class OrxIniContainer;
 	//////////////////////////////////////////////////////////////////////////
 	//! Class for INI file handling
-	class OrxIniFile : public std::enable_shared_from_this < OrxIniFile >
+	class OrxIniFile
 		{
-		public:
-			typedef std::shared_ptr<OrxIniFile>	Ptr;
-
 		public:
 			OrxIniFile(OrxIniContainer * container);
 			OrxIniFile(OrxIniContainer * container, string FileName);
@@ -308,11 +287,11 @@ namespace orxIGTools
 			Sections GetSections();
 
 			//! Adds a section to the file
-			Section::Ptr AddSection(string SectionName);
+			Section * AddSection(string SectionName);
 			//! Adds a section to the file
-			Section::Ptr AddSection(Section::Ptr section);
+			Section * AddSection(Section * section);
 			//! Gets a section by name
-			Section::Ptr GetSection(string SectionName);
+			Section * GetSection(string SectionName);
 			//! Renames a section
 			bool RenameSection(string OldSectionName, string NewSectionName);
 			//! Deletes a section
@@ -323,9 +302,9 @@ namespace orxIGTools
 			bool SectionExists(string SectionName);
 
 			//! Adds a Key to the given section
-			Key::Ptr AddKey(string SectionName, string KeyName, string Value = "");
+			Key * AddKey(string SectionName, string KeyName, string Value = "");
 			//! Gets a Key by it's name
-			Key::Ptr GetKey(string SectionName, string KeyName);
+			Key * GetKey(string SectionName, string KeyName);
 			//! Renames a section key
 			bool RenameKey(string SectionName, string OldKeyName, string NewKeyName);
 			//! Deletes a key
@@ -336,7 +315,7 @@ namespace orxIGTools
 			bool KeyExists(string SectionName, string KeyName);
 
 			//! Gets the value of a key
-			string GetValue(string SectionName, string KeyName);
+			string GetValue(string SectionName, string KeyName, string default_value);
 			//! Sets the value of a Key
 			bool SetValue(string SectionName, string KeyName, string Value);
 
@@ -348,10 +327,16 @@ namespace orxIGTools
 			//! sorts sections and keys
 			bool Sort(bool Descending);
 
+			//! Tells if the file is dirty
+			bool IsDirty() { return m_Dirty; };
+			//! Sets the file as dirty
+			void SetDirty(bool dirty) { m_Dirty = dirty; };
+
 		private:
 			OrxIniContainer	*	m_Container;
 			Records				m_Records;
 			string				m_Filename;
+			bool				m_Dirty;
 
 		private:
 			static bool IsCommentLine(string & line);
@@ -363,14 +348,14 @@ namespace orxIGTools
 			//! Ascending comparison functor
 			struct AscendingSectionSort
 				{
-				bool operator()(Record::Ptr Start, Record::Ptr End)
+				bool operator()(Record * Start, Record * End)
 					{
 					if ((Start->m_Type == RecordType::Section) &&
 						(End->m_Type == RecordType::Section))
 						{
-						Section::Ptr sSect = dynamic_pointer_cast<Section>(Start);
-						Section::Ptr eSect = dynamic_pointer_cast<Section>(End);
-						return sSect->m_Name < eSect->m_Name;
+						Section * sSect = static_cast<Section *>(Start);
+						Section * eSect = static_cast<Section *>(End);
+						return sSect->GetName() < eSect->GetName();
 						}
 
 					return false;
@@ -381,14 +366,14 @@ namespace orxIGTools
 			//! Descending comparison functor
 			struct DescendingSectionSort
 				{
-				bool operator()(Record::Ptr Start, Record::Ptr End)
+				bool operator()(Record * Start, Record * End)
 					{
 					if ((Start->m_Type == RecordType::Section) &&
 						(End->m_Type == RecordType::Section))
 						{
-						Section::Ptr sSect = dynamic_pointer_cast<Section>(Start);
-						Section::Ptr eSect = dynamic_pointer_cast<Section>(End);
-						return sSect->m_Name > eSect->m_Name;
+						Section * sSect = static_cast<Section *>(Start);
+						Section * eSect = static_cast<Section *>(End);
+						return sSect->GetName() > eSect->GetName();
 						}
 
 					return false;
@@ -397,7 +382,7 @@ namespace orxIGTools
 
 		};
 
-	typedef std::list<OrxIniFile::Ptr> OrxIniFiles;
+	typedef std::list<OrxIniFile * >	OrxIniFiles;
 
 	//////////////////////////////////////////////////////////////////////////
 	//! Container of OrxIniFiles that can resolve dependencies
@@ -417,25 +402,20 @@ namespace orxIGTools
 			//! Tests if a filename is present in the given loaded file list
 			bool			FileLoaded(OrxIniFiles & files, std::string filename);
 			//! Loads a file and adds it to the list of loaded files
-			void			LoadFile(std::string filename);
+			OrxIniFile *	LoadFile(std::string filename);
 			//! Gets a section visible to the requestor
-			Section::Ptr	GetSection(OrxIniFile::Ptr requestor, std::string section_name);
+			Section *		GetSection(OrxIniFile * requestor, std::string section_name);
 			//! Searches and gets a section in the list
-			Section::Ptr	GetSection(Sections & sections, std::string section_name);
+			Section *		GetSection(Sections & sections, std::string section_name);
 			//! Fills a list of files that are visible by source file
-			void			GetVisibleFiles(OrxIniFile::Ptr source, OrxIniFiles & files);
+			void			GetVisibleFiles(OrxIniFile * source, OrxIniFiles & files);
 			//! Gets a file from the list of loaded files
-			OrxIniFile::Ptr GetFile(std::string filename);
+			OrxIniFile *	GetFile(std::string filename);
 			//! Gets a list of sections from a list of files
 			void			GetSections(Sections & sections, OrxIniFiles & files);
 
 		protected:
-
-
-		protected:
 			OrxIniFiles		m_Files;
-
-
 
 		};
 

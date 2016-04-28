@@ -6,3 +6,8 @@ orxIGTools/build/VS2013/Release/*.*
 *.obj
 *.sdf
 *.idb
+orxIGToolsTest/bin/Win32/Debug/*
+orxIGToolsTest/build/VS2013/Debug/*
+orxIGToolsTest/build/VS2013/Release/*
+orxIGTools/build/VS2013/ipch/*
+orxIGTools/lib/*

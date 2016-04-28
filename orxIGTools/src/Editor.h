@@ -5,6 +5,10 @@
 #include "Tool.h"
 #include "OrxIniFile.h"
 #include "EditorPage.h"
+#include "ProjectFilesView.h"
+#include "HeaderView.h"
+#include "NavigationView.h"
+#include "FooterView.h"
 
 #include <orx.h>
 #include <Gwen/Gwen.h>
@@ -23,26 +27,23 @@ using namespace Gwen;
 using namespace Gwen::Controls;
 using namespace Gwen::Skin;
 
-
-
-#define HEADER_HEIGHT			64
-#define FOOTER_HEIGHT			64
-
 #define WINDOW_BASE_CLASS		Controls::Base /*WindowControl*/
 
 namespace orxIGTools
 	{
 
 	//////////////////////////////////////////////////////////////////////////
-	//! Class that holds target informations
-	struct TargetInfo
+	//! File extension entry
+	struct FileExtension
 		{
-		std::string	m_TargetName;
-		std::string m_IconFilename;
-		Tool::Ptr	m_Tool;
+		FileExtension() {};
+		FileExtension(std::string ext, std::string icon) : m_Extension(ext), m_Icon(icon) {};
+
+		std::string		m_Extension;  // ".xxx"
+		std::string		m_Icon;
 		};
 
-	typedef std::list<TargetInfo> TargetInfoList;
+	typedef std::list<FileExtension> FileExtensions;
 
 	//////////////////////////////////////////////////////////////////////////
 	//! Main editor class, the one you need to start the engine
@@ -57,103 +58,96 @@ namespace orxIGTools
 
 		public:
 			//! Sets the folder name of where orxIGTools images are
-			void				SetImagesFolderName(std::string folder_name);
+			void SetImagesFolderName(std::string folder_name);
 			//! Sets the folder name of where orxIGTools images are
-			std::string			GetImagesFolderName();
+			std::string GetImagesFolderName();
 
 
 			//! Initializes the editor
-			orxSTATUS			Init();
+			orxSTATUS Init();
 			//! Updates the editor
-			orxSTATUS			Run();
+			orxSTATUS Run();
 			//! Called at shutdown to cleanup
-			orxSTATUS			Exit();
+			orxSTATUS Exit();
 
 
 			//! Controls Editor visibiliy
-			void				Show(bool show);
+			void Show(bool show);
 			//! Tells if the editor is visible
-			bool				IsVisible() { return m_Visible; };
-
-			//! Adds a target name
-			bool				AddTarget(std::string target, std::string icon_filename = "");
-			//! Tests if a target exists
-			bool				TargetExists(std::string target);
-			//! Get all targets
-			StringList			GetTargets();
-			//! Get all targets
-			TargetInfo *		GetTarget(std::string target);
-			//! Get target icon file name
-			std::string			GetTargetIconFileName(std::string target_name);
-
-			//! Adds a tool
-			bool				AddTool(Tool::Ptr tool);
-			//! Get tool list
-			Tools				GetTools();
-			//! Adds a tool
-			Tool::Ptr			GetToolByTarget(std::string target);
+			bool IsVisible() { return m_Visible; };
 
 			//! Called when a tool has been selected
-			void				OnToolSelected(Event::Info info);
+			void OnToolSelected(Event::Info info);
 			//! Shows a page
-			void				ShowTool(std::string target);
+			void ShowTool(Tool::Ptr target);
 			//! Called when the Back Button is pressed
-			void				OnBackPressed(Event::Info info);
+			void OnBackPressed(Event::Info info);
 			//! Called when the Exit Button is pressed
-			void				OnExitPressed(Event::Info info);
-			//! Fills the contents with the list of tools
-			void				ShowTools(Gwen::Controls::Base * pParent);
+			void OnExitPressed(Event::Info info);
 
 			//! Gets a path to use to get an image
-			std::string			GetImagePath(std::string image_filename);
+			std::string	GetImagePath(std::string image_filename);
+
+			//! Registers a file extension
+			bool RegisterFileExtension(FileExtension extension);
+			//! Gets a file extension object from extension
+			bool GetFileExtension(std::string extension, FileExtension * foud_extension);
+
+			//! Returns the ini container
+			OrxIniContainer * GetIniContainer() { return &m_IniContainer; };
+
+			//! Returns a pointer to the canvas
+			Canvas * GetCanvas() { return m_pCanvas; };
+			//! Returns a pointer to the canvas
+			orxGwen::Input * GetInput() { return &m_GwenInput; };
 
 		private:
 			//!	Initializes Gwen stuff
-			void				InitializeGwen();
+			void InitializeGwen();
 			//!	Initializes GUI elements
-			void				InitializeGui();
+			void InitializeGui();
 			//!	Deinitializes GUI elements
-			void				DeinitializeGui();
+			void DeinitializeGui();
 			//! Initialized the gwen input system
-			void				InitializeInputSystem();
+			void InitializeInputSystem();
 			//! Initializes ORX events to pass to input system
-			void				InitializeEvents();
+			void InitializeEvents();
 			//! Deinitializes ORX events to pass to input system
-			void				DeinitializeEvents();
+			void DeinitializeEvents();
 			//! Main event handler
-			orxSTATUS			HandleOrxEvent(const orxEVENT *_pstEvent);
+			orxSTATUS HandleOrxEvent(const orxEVENT *_pstEvent);
 			//! Updates the canvas using screen size
-			void				UpdateCanvasSize();
+			void UpdateCanvasSize();
 			//! Helper function that resturns the screen size
-			Gwen::Point			GetScreenSize();
+			Gwen::Point GetScreenSize();
 			//! Creates the main window and all children
-			Canvas				CreateCanvas(Gwen::Skin::TexturedBase * skin);
+			Canvas CreateCanvas(Gwen::Skin::TexturedBase * skin);
 			//! Creates the main window and all children
-			void				CreateMainWindow(Controls::Base * parent);
+			void CreateMainWindow(Controls::Base * parent);
+			//! Creates the folder tree view
+			void CreateTreeView(Controls::DockBase * parent);
 			//! Pushes a name on the Tool path stack
-			void				PushPage(EditorPage * page);
+			void PushPage(EditorPage * page);
 			//! Pops a name from the Tool path stack
-			void				PopPage();
+			void PopPage();
 			//! Updates page stack label
-			void				UpdatePageStackLabel();
+			void UpdatePageStackLabel();
+			//! Shows a tree with all project files
+			void ShowTree();
 
 		private: // Statics
 			static orxSTATUS orxFASTCALL StaticEventHandler(const orxEVENT *_pstEvent);
 
-		private:
-			std::string						m_ImagesFolderName;
-			//! Current state
-			bool							m_Visible;
-			//! Loaded orx Ini files
-			OrxIniFiles						m_Files;
-			//! Registered tools
-			TargetInfoList					m_TargetInfos;
+		private: // controls and Gwen related stuff
 			//! Skin to use with the renderer
 			Gwen::Skin::TexturedBase *		m_pSkin;
 			//! Renderer for GWEN
 			orxGwen::Renderer *				m_pRenderer;
 			//! GWEN input sytem
 			orxGwen::Input					m_GwenInput;
+
+			// --- MAIN VIEW ---
+
 			//! Base Canvas (root) 
 			Canvas *						m_pCanvas;
 			//! counter of frames rendered in last second
@@ -164,22 +158,36 @@ namespace orxIGTools
 			WINDOW_BASE_CLASS *				m_MainWindow;
 			//! Main Dock control
 			DockBase *						m_pDockBase;
-			//! Header control 
-			Controls::ImagePanel *			m_pLogoPanel;
-			//! Header control 
-			Label *							m_pVersionLabel;
-			//! Header control 
-			TextBox *						m_pPathLabel;
+
+			// --- TOP VIEW ---
+			HeaderView						m_HeaderView;
+			NavigationView					m_NavigationView;
+
+			// --- CENTER VIEW ---
+
 			//! Container of tool controls
 			Layout::Center *				m_pPageContainer;
-			//! Back button
-			Button *						m_pBackButton;
-			//! Exit button
-			Button *						m_pExitButton;
 			//! Pointer to last control
 			EditorPage *					m_pCurrentPage;
+
+			// --- BOTTOM VIEW ---
+			FooterView						m_FooterView;				
+
+			// --- TREE VIEW ---
+
+			//! container of the tree control
+			ProjectFileView *				m_pProjectFileView;
+
+		private:
+			std::string						m_ImagesFolderName;
+			//! Current state
+			bool							m_Visible;
+			//! Loaded orx Ini files
+			OrxIniContainer					m_IniContainer;
 			//! Path names stack
 			std::list<EditorPage *>			m_PageStack;
+			//! Registered file extensions
+			FileExtensions					m_FileExtensions;
 
 		};
 	
