@@ -5,10 +5,11 @@
 #define __NO_SCROLLED__
 #include <Scroll/Scroll.h>
 
-
+#include "OrxGuiApplication.h"
+#include "ObjectHierarchy.h"
 
 //! OrxScroll class
-class orxIGToolsTestApplication : public Scroll<orxIGToolsTestApplication>
+class orxIGToolsTestApplication : public OrxGuiApplication<orxIGToolsTestApplication>
 	{
 	public:
 
@@ -21,6 +22,10 @@ class orxIGToolsTestApplication : public Scroll<orxIGToolsTestApplication>
 		virtual void		Exit();
 		//! Binds objects
 		void				BindObjects();
+        //! Resizes the viewport
+        void                ResizeViewport();
+        //! Renders gui stuff
+        void                RenderGui();
 
 
 	private: // Overrides
@@ -33,6 +38,8 @@ class orxIGToolsTestApplication : public Scroll<orxIGToolsTestApplication>
 
 	private:
 		ScrollObject *		m_CurrentScene;
-		ScrollObject *		m_Soldier;
+        bool                m_Show_test_window;
+        bool                m_Show_another_window;
+        ImGui::Orx::ObjectHierarchy     m_ObjectHierarchy;
 
 	};
