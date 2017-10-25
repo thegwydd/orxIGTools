@@ -7,3 +7,6 @@
 [submodule "orx_extensions"]
 	path = orx_extensions
 	url = https://github.com/thegwydd/orx_extensions.git
+[submodule "spdlog"]
+	path = spdlog
+	url = https://github.com/gabime/spdlog.git
