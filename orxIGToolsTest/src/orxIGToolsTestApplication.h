@@ -4,44 +4,36 @@
 
 #define __NO_SCROLLED__
 #include <Scroll/Scroll.h>
-
-
+#include <orxIGTools.h>
 
 //! OrxScroll class
-class orxIGToolsTestApplication : public Scroll<orxIGToolsTestApplication>
+class orxIGToolsTestApplication : public orx::igtools::Application<orxIGToolsTestApplication>
 	{
 	public:
 
 	private: // Overrides
 		//! Initialize the program
-		virtual orxSTATUS	Init();
+		virtual orxSTATUS	OnInit() override;
 		//! Callback called every frame
-		virtual orxSTATUS	Run();
+		virtual orxSTATUS	OnRun() override;
 		//! Exit the program
-		virtual void		Exit();
-		//! Binds objects
-		void				BindObjects();
+		virtual void		OnExit() override;
+        //! Main event handler
+        virtual orxSTATUS	OnEvent(const orxEVENT *_pstEvent) override;
+        //! Debug callback
+        static void         DebugCallback(const orxSTRING _zBuffer);
+
 
 
 	private: // Overrides
-		//! Updates the canvas using screen size
-		void				UpdateCanvasSize();
-		//! Initializes ORX events to pass to input system
-		void				InitializeEvents();
-		//! Initializes the scene
-		void				InitializeScene();
-		//! Main event handler
-		orxSTATUS			HandleOrxEvent(const orxEVENT *_pstEvent);
-		//! Prints contents of all sections
-		void				PrintSections();
-		//! Runs the editos
-		void				RunEditor();
+        //! Renders gui stuff
+        void                ResizeViewport();
+        void                RenderGui();
+
 
 	private:
-		ScrollObject *		m_CurrentScene;
-		ScrollObject *		m_Soldier;
-
-	private: // Statics
-		static orxSTATUS orxFASTCALL StaticEventHandler(const orxEVENT *_pstEvent);
+        bool                m_Show_test_window;
+        bool                m_Show_another_window;
+        orx::igtools::controls::ObjectHierarchy     m_ObjectHierarchy;
 
 	};

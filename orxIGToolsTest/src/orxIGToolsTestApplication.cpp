@@ -7,24 +7,11 @@
 #undef __SCROLL_IMPL__
 
 #ifdef _DEBUG
-	#ifndef DBG_NEW
-		#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-		#define new DBG_NEW
-	#endif
+#ifndef DBG_NEW
+#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#define new DBG_NEW
+#endif
 #endif  // _DEBUG
-
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-
-#include "Gwen/Align.h"
-#include "Gwen/Utility.h"
-#include "Gwen/Controls/Layout/Position.h"
-
-#include "EnemyBug.h"
-#include "Hero.h"
-#include "Soldier.h"
-#include "Walls.h"
 
 #include <orxIGTools.h>
 
@@ -32,161 +19,125 @@
 #ifndef __orxMSVC__
 //////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
-	{
-	/* Inits and executes orx */
-	orxIGToolsTestApplication::GetInstance().Execute(argc, argv);
-	return EXIT_SUCCESS;
-	}
+    {
+    /* Inits and executes orx */
+    orxIGToolsTestApplication::GetInstance().Execute(argc, argv);
+    return EXIT_SUCCESS;
+    }
 #else  // __orxMSVC__
 //Here's an example for a console-less program under windows with visual studio
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-	{
-//	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    {
+    /* Inits and executes orx */
+    orxIGToolsTestApplication::GetInstance().Execute();
 
-	/* Inits and executes orx */
-	orxIGToolsTestApplication::GetInstance().Execute();
-
-	// Done!
-	return EXIT_SUCCESS;
-	}
+    // Done!
+    return EXIT_SUCCESS;
+    }
 #endif // __orxMSVC__
 
-
+//////////////////////////////////////////////////////////////////////////
+void orxIGToolsTestApplication::DebugCallback(const orxSTRING _zBuffer)
+    {
+#ifdef __orxMSVC__
+    OutputDebugString(_zBuffer);
+#endif
+    }
 
 //////////////////////////////////////////////////////////////////////////
-orxSTATUS orxIGToolsTestApplication::Init()
-	{
-	orxSTATUS result = orxSTATUS_SUCCESS;
-
-	m_CurrentScene = nullptr;
-	m_Soldier = nullptr;
-
-	/* Initialize the editor */
-	orxIGTools::Editor::Instance().Init();
-
-	RunEditor();
-
-/*
-	// Initialize events for game
-	InitializeEvents();
-	
-	// Initialize the scene
-	InitializeScene();
-*/
-
-	return result;
-	}
+orxSTATUS orxIGToolsTestApplication::OnInit()
+    {
+#ifdef __orxMSVC__
+    _orxDebug_SetCallback(orxIGToolsTestApplication::DebugCallback);
+#endif
+    return orxSTATUS_SUCCESS;
+    }
 
 //////////////////////////////////////////////////////////////////////////
-orxSTATUS orxIGToolsTestApplication::Run()
-	{
-	orxSTATUS result = orxSTATUS_SUCCESS;
-
-	if (!orxIGTools::Editor::Instance().IsVisible() && orxInput_IsActive("ToggleEditor"))
-		RunEditor();
-
-	if (orxIGTools::Editor::Instance().IsVisible())
-		/* Update the editor */
-		orxIGTools::Editor::Instance().Run();
-
-	return result;
-	}
+orxSTATUS orxIGToolsTestApplication::OnRun()
+    {
+    RenderGui();
+    return orxSTATUS_SUCCESS;
+    }
 
 //////////////////////////////////////////////////////////////////////////
-void orxIGToolsTestApplication::Exit()
-	{
-	/* Perform Editor cleanup*/
-	orxIGTools::Editor::Instance().Exit();
-	}
+void orxIGToolsTestApplication::OnExit()
+    {
+    }
 
 //////////////////////////////////////////////////////////////////////////
-orxSTATUS orxIGToolsTestApplication::HandleOrxEvent(const orxEVENT *_pstEvent)
-	{
-	return orxSTATUS_SUCCESS;
-	}
+orxSTATUS orxIGToolsTestApplication::OnEvent(const orxEVENT *_pstEvent)
+    {
+    if (_pstEvent->eType == orxEVENT_TYPE_DISPLAY)
+        ResizeViewport();
+
+    return orxSTATUS_SUCCESS;
+    }
 
 //////////////////////////////////////////////////////////////////////////
-void orxIGToolsTestApplication::InitializeEvents()
-	{
-	}
+void orxIGToolsTestApplication::ResizeViewport()
+    {
+    orxFLOAT scr_w, scr_h;
+    orxDisplay_GetScreenSize(&scr_w, &scr_h);
+
+    orxFLOAT vwp_w, vwp_h;
+    orxViewport_GetSize(GetMainViewport(), &vwp_w, &vwp_h);
+
+    orxAABOX frustum;
+    orxCamera_GetFrustum(GetMainCamera(), &frustum);
+
+    orxVECTOR cam_pos;
+    orxCamera_GetPosition(GetMainCamera(), &cam_pos);
+    orxCamera_SetFrustum(GetMainCamera(), vwp_w, vwp_h, frustum.vTL.fZ, frustum.vBR.fZ);
+    orxCamera_SetPosition(GetMainCamera(), &cam_pos);
+
+    orxDEBUG_PRINT(orxDEBUG_LEVEL_LOG, "Viewport Size : %f, %f", vwp_w, vwp_h);
+    }
 
 //////////////////////////////////////////////////////////////////////////
-void orxIGToolsTestApplication::InitializeScene()
-	{
-	// create the scene
-	orxConfig_Load("orxIGToolsTestDefault.ini");
-	orxConfig_Load("Level1.ini");
+void orxIGToolsTestApplication::RenderGui()
+    {
+    ImGui_Orx_NewFrame();
 
-	//PrintSections();
+    ImVec4 clear_color = ImColor(114, 144, 154);
 
-	m_CurrentScene = CreateObject("Walls");
+    orxFLOAT viewport_w, viewport_h;
+    orxViewport_GetSize(GetMainViewport(), &viewport_w, &viewport_h);
 
-	// create objects from level1
-	m_Soldier = CreateObject("Soldier");
-/*
-	CreateObject("Walls");
-	// an enemies of course...
-	for (orxU32 i = 0; i < 5; i++)
-		{
-		ScrollObject * pObj = CreateObject("O-EnemyBug");
-		const orxCHAR * pszName = orxObject_GetName(pObj->GetOrxObject());
-		}
-*/
-	}
+    m_ObjectHierarchy.ShowObjectTree(ImVec2(0, 0), ImVec2(300, viewport_h), -1.0F, ImGuiWindowFlags_NoMove);
+    // 1. Show a simple window
+    // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appears in a window automatically called "Debug"
 
-//////////////////////////////////////////////////////////////////////////
-void orxIGToolsTestApplication::BindObjects()
-	{
-	ScrollBindObject<EnemyBug>("O-EnemyBug");
-	ScrollBindObject<Hero>("O-Hero");
-	ScrollBindObject<Soldier>("Soldier");
-	ScrollBindObject<Walls>("Walls");
-	}
 
-//////////////////////////////////////////////////////////////////////////
-void orxIGToolsTestApplication::PrintSections()
-	{
-	orxU32 u32SectionCount = orxConfig_GetSectionCounter();
-	for (orxU32 u32SectionIndex = 0; u32SectionIndex < u32SectionCount; u32SectionIndex++)
-		{
-		const orxCHAR * strCurrentSection = orxConfig_GetSection(u32SectionIndex);
-		const orxCHAR * strCurrentSectionOrigin = orxConfig_GetOrigin(strCurrentSection);
+    ImGui::Text("Hello, world!");
+    ImGui::SetNextWindowSize(ImVec2(200, 500), ImGuiSetCond_FirstUseEver);
+    static float f = 0.0f;
+    ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
+    ImGui::ColorEdit3("clear color", (float*)&clear_color);
+    if (ImGui::Button("Test Window")) m_Show_test_window ^= 1;
+    if (ImGui::Button("Another Window")) m_Show_another_window ^= 1;
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 
-		orxConfig_PushSection(strCurrentSection);
+    // 2. Show another simple window, this time using an explicit Begin/End pair
+    if (m_Show_another_window)
+        {
+        ImGui::SetNextWindowPos(ImVec2());
+        ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiSetCond_FirstUseEver);
+        ImGui::Begin("Another Window", &m_Show_another_window);
+        ImGui::Text("Hello");
+        ImGui::End();
+        }
 
-		orxU32 u32KeyCount = orxConfig_GetKeyCounter();
-		for (orxU32 u32KeyIndex = 0; u32KeyIndex < u32KeyCount; u32KeyIndex++)
-			{
-			const orxCHAR * strCurrentKey = orxConfig_GetKey(u32KeyIndex);
-			if (orxConfig_IsInheritedValue(strCurrentKey) == orxTRUE)
-				{
-				const orxCHAR * strCurrentKeyParent = orxConfig_GetValueSource(strCurrentKey);
-				}
-			}
+    // 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
+    if (m_Show_test_window)
+        {
+        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
+        ImGui::ShowTestWindow(&m_Show_test_window);
+        }
 
-		orxConfig_PopSection();
+    // Rendering
+    ImGui::Render();
+    }
 
-		}
-	}
 
-//////////////////////////////////////////////////////////////////////////
-void orxIGToolsTestApplication::RunEditor()
-	{
-	// delete the entire scene
-	if (m_CurrentScene != nullptr)
-		{
-		this->DeleteObject(m_CurrentScene);
-		m_CurrentScene = nullptr;
-		}
-	
-	if (m_Soldier!= nullptr)
-		{
-		this->DeleteObject(m_Soldier);
-		m_Soldier = nullptr;
-		}
-	
-	orxViewport_Enable(this->GetMainViewport(), orxFALSE);
 
-	orxIGTools::Editor::Instance().Show(true);
-
-	}
