@@ -15,6 +15,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGuiOrx", "..\..\..\ImGuiO
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "orxIGToolsTest", "..\..\..\orxIGToolsTest\build\VS2017\orxIGToolsTest.vcxproj", "{55CAC2A0-908C-4A8C-A127-E4CB55D10B92}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FC3731BF-2598-4208-A12F-CFBDE3DCA49E}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\readme.md = ..\..\..\readme.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Core Debug|Win32 = Core Debug|Win32
