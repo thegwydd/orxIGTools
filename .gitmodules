@@ -1,0 +1,9 @@
+[submodule "orx"]
+	path = orx
+	url = https://github.com/thegwydd/orx.git
+[submodule "ImGuiOrx"]
+	path = ImGuiOrx
+	url = https://github.com/thegwydd/ImGuiOrx.git
+[submodule "orx_extensions"]
+	path = orx_extensions
+	url = https://github.com/thegwydd/orx_extensions.git
