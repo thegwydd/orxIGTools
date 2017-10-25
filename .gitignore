@@ -1,0 +1,4 @@
+/bin/*
+/lib/*
+/obj/*
+/orxIGTools/build/VS2017/.vs/*

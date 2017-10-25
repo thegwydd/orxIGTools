@@ -7,8 +7,6 @@
 
 #include "../src/Types.h"
 #include "../src/StringUtility.h"
-#include "../src/OrxIniFile.h"
-#include "../src/Editor.h"
 
 
 
