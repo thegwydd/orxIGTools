@@ -42,14 +42,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)\..\..\..\orx\code\include;$(ProjectDir)\..\..\..\ImGuiOrx\include;$(ProjectDir)\..\..\..\ImGuiOrx\test\scroll\include;$(ProjectDir)\..\..\..\orxIGTools\include\;$(ProjectDir)\..\..\..\ImGuiOrx\imgui;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\..\..\..\orx\code\include;$(ProjectDir)\..\..\..\orxIGTools\include\;$(ProjectDir)\..\..\..\ImGuiOrx\include;$(ProjectDir)\..\..\..\ImGuiOrx\imgui;$(ProjectDir)\..\..\..\ImGuiOrx\test\scroll\include;$(ProjectDir)\..\..\..\spdlog\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)\..\..\..\lib\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)\..\..\..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)\..\..\..\obj\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)\..\..\..\orx\code\include;$(ProjectDir)\..\..\..\ImGuiOrx\include;$(ProjectDir)\..\..\..\ImGuiOrx\test\scroll\include;$(ProjectDir)\..\..\..\orxIGTools\include\;$(ProjectDir)\..\..\..\ImGuiOrx\imgui;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\..\..\..\orx\code\include;$(ProjectDir)\..\..\..\orxIGTools\include\;$(ProjectDir)\..\..\..\ImGuiOrx\include;$(ProjectDir)\..\..\..\ImGuiOrx\imgui;$(ProjectDir)\..\..\..\ImGuiOrx\test\scroll\include;$(ProjectDir)\..\..\..\spdlog\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)\..\..\..\lib\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)\..\..\..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)\..\..\..\obj\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
@@ -75,7 +75,7 @@
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>xcopy /y /i $(ProjectDir)\..\..\..\orx\code\lib\dynamic\*.dll $(TargetDir)
-xcopy /y /i $(ProjectDir)\..\..\..\orx\code\lib\dynamic\*.lib $(OutputDir)</Command>
+xcopy /y /i $(ProjectDir)\..\..\..\orx\code\lib\dynamic\*.lib $(ProjectDir)\..\..\..\lib\$(Platform)\$(Configuration)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -103,24 +103,17 @@ xcopy /y /i $(ProjectDir)\..\..\..\orx\code\lib\dynamic\*.lib $(OutputDir)</Comm
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>xcopy /y /i $(ProjectDir)\..\..\..\orx\code\lib\dynamic\*.dll $(TargetDir)
-xcopy /y /i $(ProjectDir)\..\..\..\orx\code\lib\dynamic\*.lib $(OutputDir)</Command>
+xcopy /y /i $(ProjectDir)\..\..\..\orx\code\lib\dynamic\*.lib $(ProjectDir)\..\..\..\lib\$(Platform)\$(Configuration)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\orxIGToolsTestApplication.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\ObjectHierarchy.h" />
-    <ClInclude Include="..\..\src\OrxGuiApplication.h" />
     <ClInclude Include="..\..\src\orxIGToolsTestApplication.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\data\Bugs.ini" />
-    <None Include="..\..\data\Hero.ini" />
-    <None Include="..\..\data\Level1.ini" />
-    <None Include="..\..\data\orxIGToolsDefault.ini" />
     <None Include="..\..\data\orxIGToolsTest.ini" />
-    <None Include="..\..\data\Soldier.ini" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

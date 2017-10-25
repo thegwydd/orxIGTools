@@ -5,8 +5,11 @@
  *  orxIGTools by Denis Brachet (2016)
  *--------------------------------------------------------------------------*/
 
-#include "../src/Types.h"
+#include "../src/Logger.h"
 #include "../src/StringUtility.h"
+#include "../src/Application.h"
+#include "../src/ObjectHierarchy.h"
+#include "../src/orxIGToolsInstance.h"
 
 
 

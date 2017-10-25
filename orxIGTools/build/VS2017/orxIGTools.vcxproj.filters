@@ -1,16 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\..\src\orxIGToolsPCH.cpp" />
-    <ClCompile Include="..\..\src\Logger.cpp" />
-    <ClCompile Include="..\..\src\StringUtility.cpp" />
+    <ClCompile Include="..\..\src\orxIGToolsInstance.cpp" />
+    <ClCompile Include="..\..\src\Logger.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\StringUtility.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\orxIGTools.h" />
     <ClInclude Include="..\..\src\Version.h" />
-    <ClInclude Include="..\..\src\orxIGToolsPCH.h" />
-    <ClInclude Include="..\..\src\Logger.h" />
-    <ClInclude Include="..\..\src\Singleton.h" />
-    <ClInclude Include="..\..\src\StringUtility.h" />
+    <ClInclude Include="..\..\src\orxIGToolsInstance.h" />
+    <ClInclude Include="..\..\src\Logger.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\StringUtility.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ObjectHierarchy.h">
+      <Filter>Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Application.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>{325018c8-f980-417c-891b-edac43b53789}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls">
+      <UniqueIdentifier>{4c21893a-c9bc-495a-9c61-a4e30cb0567c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

@@ -2,28 +2,11 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="..\..\src\orxIGToolsTestApplication.h" />
-    <ClInclude Include="..\..\src\ObjectHierarchy.h" />
-    <ClInclude Include="..\..\src\OrxGuiApplication.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\orxIGToolsTestApplication.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\data\orxIGToolsDefault.ini">
-      <Filter>Config Files</Filter>
-    </None>
-    <None Include="..\..\data\Bugs.ini">
-      <Filter>Config Files</Filter>
-    </None>
-    <None Include="..\..\data\Hero.ini">
-      <Filter>Config Files</Filter>
-    </None>
-    <None Include="..\..\data\Level1.ini">
-      <Filter>Config Files</Filter>
-    </None>
-    <None Include="..\..\data\Soldier.ini">
-      <Filter>Config Files</Filter>
-    </None>
     <None Include="..\..\data\orxIGToolsTest.ini">
       <Filter>Config Files</Filter>
     </None>

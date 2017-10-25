@@ -19,84 +19,64 @@
 #ifndef __orxMSVC__
 //////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
-{
+    {
     /* Inits and executes orx */
     orxIGToolsTestApplication::GetInstance().Execute(argc, argv);
     return EXIT_SUCCESS;
-}
+    }
 #else  // __orxMSVC__
 //Here's an example for a console-less program under windows with visual studio
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-{
+    {
     /* Inits and executes orx */
     orxIGToolsTestApplication::GetInstance().Execute();
 
     // Done!
     return EXIT_SUCCESS;
-}
+    }
 #endif // __orxMSVC__
 
-
+//////////////////////////////////////////////////////////////////////////
+void orxIGToolsTestApplication::DebugCallback(const orxSTRING _zBuffer)
+    {
+#ifdef __orxMSVC__
+    OutputDebugString(_zBuffer);
+#endif
+    }
 
 //////////////////////////////////////////////////////////////////////////
-orxSTATUS orxIGToolsTestApplication::Init()
-{
-    orxSTATUS result = orxSTATUS_SUCCESS;
-
-    m_CurrentScene = nullptr;
-
-    /*
-    // Initialize events for game
-    InitializeEvents();
-
-    // Initialize the scene
-    InitializeScene();
-    */
-
-    return result;
-}
+orxSTATUS orxIGToolsTestApplication::OnInit()
+    {
+#ifdef __orxMSVC__
+    _orxDebug_SetCallback(orxIGToolsTestApplication::DebugCallback);
+#endif
+    return orxSTATUS_SUCCESS;
+    }
 
 //////////////////////////////////////////////////////////////////////////
-orxSTATUS orxIGToolsTestApplication::Run()
-{
-    orxSTATUS result = orxSTATUS_SUCCESS;
-
-    return result;
-}
-
-//////////////////////////////////////////////////////////////////////////
-void orxIGToolsTestApplication::Exit()
-{
-}
+orxSTATUS orxIGToolsTestApplication::OnRun()
+    {
+    RenderGui();
+    return orxSTATUS_SUCCESS;
+    }
 
 //////////////////////////////////////////////////////////////////////////
-orxSTATUS orxIGToolsTestApplication::HandleOrxEvent(const orxEVENT *_pstEvent)
-{
+void orxIGToolsTestApplication::OnExit()
+    {
+    }
+
+//////////////////////////////////////////////////////////////////////////
+orxSTATUS orxIGToolsTestApplication::OnEvent(const orxEVENT *_pstEvent)
+    {
     if (_pstEvent->eType == orxEVENT_TYPE_DISPLAY)
         ResizeViewport();
 
-    return OrxGuiApplication::OnOrxEvent(_pstEvent);
     return orxSTATUS_SUCCESS;
-}
-
-//////////////////////////////////////////////////////////////////////////
-void orxIGToolsTestApplication::InitializeEvents()
-{
-}
-
-//////////////////////////////////////////////////////////////////////////
-void orxIGToolsTestApplication::InitializeScene()
-{
-}
-
-//////////////////////////////////////////////////////////////////////////
-void orxIGToolsTestApplication::BindObjects()
-{
-}
+    }
 
 //////////////////////////////////////////////////////////////////////////
 void orxIGToolsTestApplication::ResizeViewport()
-{
+    {
     orxFLOAT scr_w, scr_h;
     orxDisplay_GetScreenSize(&scr_w, &scr_h);
 
@@ -112,13 +92,11 @@ void orxIGToolsTestApplication::ResizeViewport()
     orxCamera_SetPosition(GetMainCamera(), &cam_pos);
 
     orxDEBUG_PRINT(orxDEBUG_LEVEL_LOG, "Viewport Size : %f, %f", vwp_w, vwp_h);
-}
+    }
 
 //////////////////////////////////////////////////////////////////////////
 void orxIGToolsTestApplication::RenderGui()
-{
-    OrxGuiApplication::RenderGui();
-
+    {
     ImGui_Orx_NewFrame();
 
     ImVec4 clear_color = ImColor(114, 144, 154);
@@ -142,24 +120,24 @@ void orxIGToolsTestApplication::RenderGui()
 
     // 2. Show another simple window, this time using an explicit Begin/End pair
     if (m_Show_another_window)
-    {
+        {
         ImGui::SetNextWindowPos(ImVec2());
         ImGui::SetNextWindowSize(ImVec2(200, 100), ImGuiSetCond_FirstUseEver);
         ImGui::Begin("Another Window", &m_Show_another_window);
         ImGui::Text("Hello");
         ImGui::End();
-    }
+        }
 
     // 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
     if (m_Show_test_window)
-    {
+        {
         ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
         ImGui::ShowTestWindow(&m_Show_test_window);
-    }
+        }
 
     // Rendering
     ImGui::Render();
-}
+    }
 
 
 

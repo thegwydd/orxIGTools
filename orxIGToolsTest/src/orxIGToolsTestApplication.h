@@ -4,42 +4,36 @@
 
 #define __NO_SCROLLED__
 #include <Scroll/Scroll.h>
-
-#include "OrxGuiApplication.h"
-#include "ObjectHierarchy.h"
+#include <orxIGTools.h>
 
 //! OrxScroll class
-class orxIGToolsTestApplication : public OrxGuiApplication<orxIGToolsTestApplication>
+class orxIGToolsTestApplication : public orx::igtools::Application<orxIGToolsTestApplication>
 	{
 	public:
 
 	private: // Overrides
 		//! Initialize the program
-		virtual orxSTATUS	Init();
+		virtual orxSTATUS	OnInit() override;
 		//! Callback called every frame
-		virtual orxSTATUS	Run();
+		virtual orxSTATUS	OnRun() override;
 		//! Exit the program
-		virtual void		Exit();
-		//! Binds objects
-		void				BindObjects();
-        //! Resizes the viewport
-        void                ResizeViewport();
-        //! Renders gui stuff
-        void                RenderGui();
+		virtual void		OnExit() override;
+        //! Main event handler
+        virtual orxSTATUS	OnEvent(const orxEVENT *_pstEvent) override;
+        //! Debug callback
+        static void         DebugCallback(const orxSTRING _zBuffer);
+
 
 
 	private: // Overrides
-		//! Initializes ORX events to pass to input system
-		void				InitializeEvents();
-		//! Initializes the scene
-		void				InitializeScene();
-		//! Main event handler
-		orxSTATUS			HandleOrxEvent(const orxEVENT *_pstEvent);
+        //! Renders gui stuff
+        void                ResizeViewport();
+        void                RenderGui();
+
 
 	private:
-		ScrollObject *		m_CurrentScene;
         bool                m_Show_test_window;
         bool                m_Show_another_window;
-        ImGui::Orx::ObjectHierarchy     m_ObjectHierarchy;
+        orx::igtools::controls::ObjectHierarchy     m_ObjectHierarchy;
 
 	};
